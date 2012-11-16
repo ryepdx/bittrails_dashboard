@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rabbit Trails - Fitter Twitter</title>
+  </head>
+  <body>
+      {% block user %}
+        {% if 'twitter_user' not in session %}
+            <a href="/login">Sign in with Twitter</a>
+        {% else %}
+            <a href="/logout">Sign Out {{session['twitter_user']}}</a>
+        {% endif %}
+      {% endblock %}
+  </body>
+</html>
