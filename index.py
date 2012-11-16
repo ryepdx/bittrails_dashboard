@@ -8,7 +8,6 @@ app = Flask(__name__)
 app.register_blueprint(twitter_auth)
 app.secret_key = APP_SECRET_KEY
 
-
 @app.route('/')
 def hello_world():
     return render_template('index.html')
@@ -36,7 +35,12 @@ def oauth_callback():
         cur.execute("""update users set fitbit_auth = ?
             where username = ?""", (access_token, session['twitter_user']))
 
+    session['fitbit_access_token'] = access_token
     return 'Winning.'
+
+@app.route('/login_stub')
+def login_stub():
+    return 'Logged in.'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=DEBUG)

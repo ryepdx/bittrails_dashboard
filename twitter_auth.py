@@ -56,6 +56,9 @@ def logout():
     session.pop('twitter_user')
     return redirect(request.args.get('next') or url_for('.home'))
 
+def logged_in():
+    return 'twitter_user' in session
+
 @twitter.tokengetter
 def get_twitter_oauth_token():
         return session.get('oauth_token')
