@@ -27,14 +27,14 @@ def oauth_callback():
             session['auth_token'])
     conn = db.connect(DATABASE)
     cur = conn.cursor()
-    cur.execute('select fitbit_auth from users where username = ? 
-            and fitbit_auth = \'\'', (session['twitter_user'],))
+    cur.execute("""select fitbit_auth from users where username = ?  
+            and fitbit_auth = ''""", (session['twitter_user'],))
 
     # Should change the database constraints to enforce uniqueness on
     # the username so I can change the below line to cur.rowcount == 1.
     if cur.rowcount > 0:
-        cur.execute('update users set fitbit_auth = ?
-            where username = ?', (access_token, session['twitter_user']))
+        cur.execute("""update users set fitbit_auth = ?
+            where username = ?""", (access_token, session['twitter_user']))
 
     return 'Winning.'
 
