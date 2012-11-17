@@ -1,7 +1,7 @@
 import sqlite3 as db
 from fitbit import FitBit
 from flask import Flask, request, session, url_for, redirect, render_template
-from settings import DEBUG, APP_SECRET_KEY, DATABASE
+from settings import DEBUG, APP_SECRET_KEY, DATABASE, FITBIT_ACCESS_TOKEN, TWITTER_USERNAME
 from twitter_auth import twitter_auth
 
 app = Flask(__name__)
@@ -40,7 +40,14 @@ def oauth_callback():
 
 @app.route('/login_stub')
 def login_stub():
+    session['fitbit_access_token'] = FITBIT_ACCESS_TOKEN
+    session['twitter_user'] = TWITTER_USERNAME
     return 'Logged in.'
+
+@app.route('/fitbit_steps')
+def login_stub():
+    api = FitBit()
+    return api.ApiCall(session['fitbit_access_token'], apiCall='/1/user/-/activities/log/steps/date/today/7d.json')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=DEBUG)
