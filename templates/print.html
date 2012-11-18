@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bit Trails - Cross the Streams</title>
+  </head>
+  <body>
+    {% block user %}
+      {% if 'test_value' in session %}
+        <div>
+          test value = {{test_value}}
+        </div>
+      {% endif %}
+      {% if 'test_list' in session %}
+        <div>
+          test list:
+          {% for item in session['test_array'] %}
+            <br>
+            {{item}}
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% if 'test_dict' in session %}
+        <div>
+          test dict:
+          {% for key in session['test_dict'] %}
+            <br>
+            {{session['test_dict'][key]}}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endblock %}
+  </body>
+</html>

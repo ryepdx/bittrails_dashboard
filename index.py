@@ -18,12 +18,12 @@ def hello_world():
         a = twitter.get(TWITTER_REQUEST,
                         data = data,
                         token = session.get('twitter_token'))
-##        b = dict()
-##        for key in a.__dict__:
-##            b[key] = type(str(a.__dict__))
-##        session['testdict'] = b
         session['tweets'] = a.data
+        session['test_dict'] = a.data[0]
+        
+    #switch the statement-commenting below to see 'print.html' in action
     return render_template('index.html')
+    #return render_template('print.html')
 
 ##@app.route('/oauth')
 ##def oauth():
