@@ -13,7 +13,7 @@ app.secret_key = APP_SECRET_KEY
 @app.route('/')
 def hello_world():
     if 'twitter_user' in session:
-        data = {"screen_name" : 'LucianNovo', #session['twitter_user']}
+        data = {"screen_name" : session['twitter_user'],
                 "count" : "20"}
         a = twitter.get(TWITTER_REQUEST,
                         data = data,
@@ -24,6 +24,14 @@ def hello_world():
 ##        session['testdict'] = b
         session['tweets'] = a.data
     return render_template('index.html')
+
+##@app.route('/oauth')
+##def oauth():
+##    return redirect('/')
+##
+##@app.route('/callback', methods=['POST', 'GET'])
+##def oauth_callback():
+##    return redirect('/')
 
 @app.route('/login_stub')
 def login_stub():

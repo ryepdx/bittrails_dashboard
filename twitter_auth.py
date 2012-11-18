@@ -31,13 +31,18 @@ def twitter_authorized(resp):
 #        flash(u'You denied the request to sign in.')
 #        return redirect(next_url)
         return 'Did not authorize.'
-
+    
+##    conn = db.connect(DATABASE)
+##    cur = conn.cursor()
     session['twitter_token'] = (
         resp['oauth_token'],
         resp['oauth_token_secret']
     )
     session['twitter_user'] = resp['screen_name']
+##    conn.commit()
+##    conn.close()
 
+    current_app.logger.info(resp)
     return redirect('/')
 #    flash('You were signed in as %s' % resp['screen_name'])
 #    return redirect(next_url)
@@ -52,5 +57,7 @@ def logged_in():
     return 'twitter_user' in session
 
 @twitter.tokengetter
-def get_twitter_oauth_token(unknown=None):
-        return session.get('twitter_token')
+def get_twitter_oauth_token(maybe = None):
+    #this thing with 'maybe' is a complete hack. I don't know why it is needed. -George
+    if maybe: return session.get('twitter_token')
+    return session.get('oauth_token')
