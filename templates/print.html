@@ -13,7 +13,7 @@
       {% if 'test_list' in session %}
         <div>
           test list:
-          {% for item in session['test_array'] %}
+          {% for item in session['test_list'] %}
             <br>
             {{item}}
           {% endfor %}
@@ -24,7 +24,7 @@
           test dict:
           {% for key in session['test_dict'] %}
             <br>
-            {{session['test_dict'][key]}}
+            {{key}} --> {{session['test_dict'][key]}}
           {% endfor %}
         </div>
       {% endif %}

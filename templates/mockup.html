@@ -3,9 +3,65 @@
     <head>
         <title>BitTrails</title>
         <link rel="stylesheet" type="text/css" href="base.css" />
+        <link href='http://fonts.googleapis.com/css?family=Sanchez' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+            google.load('jquery', '1.6.2');
+            google.load('visualization', '1.0', {'packages':['corechart']});
+            google.setOnLoadCallback(loadCharts);
+
+            function loadCharts() {
+                loadChart("chart",
+                    "Does Lady Gaga help me burn calories?",
+                    {"gaga": "Lady Gaga",
+                     "music": "All music",
+                     "calories": "Calories burned (in hundreds)"
+                    },
+                    {"2012/10/22": [1,2,3],
+                     "2012/10/23": [3,2,3],
+                     "2012/10/24": [6,2,3],
+                     "2012/10/25": [7,2,3],
+                     "2012/10/26": [2,2,3],
+                     "2012/10/27": [4,2,3],
+                     "2012/10/28": [5,2,3],
+                     "2012/10/29": [3,2,3],
+                     "2012/10/30": [1,2,3],
+                     "2012/10/31": [4,2,3],
+                     "2012/11/01": [1,2,3]});
+            }
+
+            function loadChart(chartID, chartTitle, dataTitles, data) {
+                var chart = new google.visualization.LineChart(document.getElementById("chart"));
+                var table = new google.visualization.DataTable();
+                var options = {'title':null,
+                               'height':250,
+                               'width':700,
+                               'backgroundColor':'#FFF2AF'};
+                    
+                table.addColumn('date', 'Date');
+                for (col in dataTitles) {
+                    table.addColumn('number', dataTitles[col]);
+                }
+
+                for (date_str in data) {
+                    table.addRow([new Date(date_str), data[date_str][0], data[date_str][1], data[date_str][2]]);
+                }
+                    
+                chart.draw(table, options);
+            }
+        </script>
+
     <head>
     <body>
+        <div id="logo">Bit Trails</div>
         <div class="card-base">
+            <center>
+            <div class="card" id="chart">
+                
+            </div>
+            </center>
             <div class="card">
                 You burn 20% more calories when you work out to Lady Gaga.
             </div>
