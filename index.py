@@ -4,7 +4,6 @@ from settings import DEBUG, APP_SECRET_KEY, DATABASE, \
                      FITBIT_ACCESS_TOKEN, TWITTER_USERNAME
 TWITTER_REQUEST = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 from twitter_auth import twitter_auth, twitter
-from foursquare_auth import 
 import requests
 
 app = Flask(__name__)
