@@ -1,0 +1,21 @@
+body {
+    padding: 0px;
+    margin: 0px;
+    background-color: #D31900;
+}
+
+.card-base {
+    background-color: #FF6600;
+    margin: 10%;
+}
+
+.card, .card-base {
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.card {
+    background-color: #FFF2AF;
+    padding: 5%;
+    
+}
