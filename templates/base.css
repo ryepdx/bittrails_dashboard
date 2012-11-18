@@ -21,6 +21,8 @@ body {
     font-size: 2em;
 }
 
+#chart { padding: 10px; }
+
 #logo {
     font-family: 'Ubuntu';
     font-size: 3em;
