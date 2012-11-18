@@ -52,5 +52,5 @@ def logged_in():
     return 'twitter_user' in session
 
 @twitter.tokengetter
-def get_twitter_oauth_token():
-        return session.get('oauth_token')
+def get_twitter_oauth_token(unknown=None):
+        return session.get('twitter_token')
