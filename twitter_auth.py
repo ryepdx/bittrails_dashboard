@@ -16,9 +16,9 @@ twitter = oauth.remote_app('twitter',
     consumer_secret=TWITTER_SECRET
 )
 
-@twitter_auth.route('/login')
+@twitter_auth.route('/twitter/login')
 def login():
-    url = url_for('.twitter_authorized', next=request.args.get('home') or request.referrer or None)
+    url = url_for('.twitter_authorized', next=request.args.get('home') or request.referrer or '/twitter')
     resp = twitter.authorize( callback=url )
     return resp
 
@@ -43,15 +43,15 @@ def twitter_authorized(resp):
 ##    conn.close()
 
     current_app.logger.info(resp)
-    return redirect('/')
+    return redirect('/twitter')
 #    flash('You were signed in as %s' % resp['screen_name'])
 #    return redirect(next_url)
 
 
-@twitter_auth.route('/logout')
+@twitter_auth.route('/twitter/logout')
 def logout():
     session.pop('twitter_user')
-    return redirect(request.args.get('next') or '/')
+    return redirect(request.args.get('next') or '/twitter')
 
 def logged_in():
     return 'twitter_user' in session
