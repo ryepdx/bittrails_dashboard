@@ -14,22 +14,9 @@
 
             function loadCharts() {
                 loadChart("chart",
-                    "Does Lady Gaga help me burn calories?",
-                    {"gaga": "Lady Gaga",
-                     "music": "All music",
-                     "calories": "Calories burned"
-                    },
-                    {"2012/10/22": [10,20,341],
-                     "2012/10/23": [15,10,367],
-                     "2012/10/24": [12,17,352],
-                     "2012/10/25": [5,10,162],
-                     "2012/10/26": [16,14,352],
-                     "2012/10/27": [19,8,370],
-                     "2012/10/28": [12,17,352],
-                     "2012/10/29": [1,10,338],
-                     "2012/10/30": [12,17,352],
-                     "2012/10/31": [21,10,374],
-                     "2012/11/1": [12,17,352],});
+                    "{{ question }}",
+                    {{ legend }},
+                    {{ data }});
             }
 
             function loadChart(chartID, chartTitle, dataTitles, data) {
@@ -39,13 +26,7 @@
                                'height':250,
                                'width':700,
                                'backgroundColor':'#FCFAED',
-                               'legend': 'top',
-                               Axes: {0: {logScale: false},
-                    1: {logScale: false}},
-                     series:{
-                       0:{targetAxisIndex:0},
-                       1:{targetAxisIndex:0},
-                       2:{targetAxisIndex:1}}};
+                               'legend': 'top'};
                     
                 table.addColumn('date', 'Date');
                 for (col in dataTitles) {
@@ -72,8 +53,7 @@
             </div>
             </center>
             <div class="card">
-                <h1>You burn 20% more calories when you work out to Lady Gaga.</h1>
-            
+                <h1>{{ message }}</h1>
             </div>
         </div>
         <script type="text/javascript">stLight.options({publisher: "afc2e252-db4a-483b-aa3d-a33ce9b7ca1a"});</script>
