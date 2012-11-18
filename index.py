@@ -1,7 +1,10 @@
 import sqlite3 as db
 from flask import Flask, session, url_for, redirect, render_template, request
 from settings import DEBUG, APP_SECRET_KEY, DATABASE, \
-                     FITBIT_ACCESS_TOKEN, TWITTER_USERNAME, FOURSQUARE_CLIENT_SECRET, FOURSQUARE_CALLBACK, FOURSQUARE_CLIENT_ID
+                     FITBIT_ACCESS_TOKEN, TWITTER_USERNAME, FOURSQUARE_CLIENT_SECRET, \
+		     FOURSQUARE_CALLBACK, FOURSQUARE_CLIENT_ID
+from settings_local import PORT, DEBUG
+
 TWITTER_REQUEST = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 from twitter_auth import twitter_auth, twitter
 from datetime import datetime
@@ -51,7 +54,8 @@ def get_tweet_data(user, count):
     
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect('/static/splash/index.html')
+    #return render_template('index.html')
 
 @app.route('/twitter')
 def twitter_demo():
@@ -84,6 +88,6 @@ def login_stub():
     return 'Logged in.'
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=DEBUG)
+    app.run(host='0.0.0.0', port=PORT, debug=DEBUG)
 
 
