@@ -14,22 +14,15 @@
 
             function loadCharts() {
                 loadChart("chart",
-                    "Does Lady Gaga help me burn calories?",
-                    {"gaga": "Lady Gaga",
-                     "music": "All music",
-                     "calories": "Calories burned"
+                    "Are my video game habits affecting my grades?",
+                    {"hours": "Hours on Xbox LIVE",
+                     "gpa": "Grades "
                     },
-                    {"2012/10/22": [10,20,341],
-                     "2012/10/23": [15,10,367],
-                     "2012/10/24": [12,17,352],
-                     "2012/10/25": [5,10,162],
-                     "2012/10/26": [16,14,352],
-                     "2012/10/27": [19,8,370],
-                     "2012/10/28": [12,17,352],
-                     "2012/10/29": [1,10,338],
-                     "2012/10/30": [12,17,352],
-                     "2012/10/31": [21,10,374],
-                     "2012/11/1": [12,17,352],});
+                    {"Week of 2012/10/21": [14,3.5],
+                     "Week of 2012/10/28": [40,2.1],
+                     "Week of 2012/11/4": [20,3.0],
+                     "Week of 2012/11/11": [7,3.8],
+                     "Week of 2012/11/18": [0,4.0]});
             }
 
             function loadChart(chartID, chartTitle, dataTitles, data) {
@@ -39,13 +32,11 @@
                                'height':250,
                                'width':700,
                                'backgroundColor':'#FCFAED',
-                               'legend': 'top',
-                               Axes: {0: {logScale: false},
-                    1: {logScale: false}},
+                               vAxes: {0: {logScale: false},
+                    1: {logScale: false, maxValue: 4}},
                      series:{
                        0:{targetAxisIndex:0},
-                       1:{targetAxisIndex:0},
-                       2:{targetAxisIndex:1}}};
+                       1:{targetAxisIndex:1}}};
                     
                 table.addColumn('date', 'Date');
                 for (col in dataTitles) {
@@ -53,7 +44,7 @@
                 }
 
                 for (date_str in data) {
-                    table.addRow([new Date(date_str), data[date_str][0], data[date_str][1], data[date_str][2]]);
+                    table.addRow([new Date(date_str), data[date_str][0], data[date_str][1]]);
                 }
                     
                 chart.draw(table, options);
@@ -62,6 +53,7 @@
         <script type="text/javascript">var switchTo5x=true;</script>
 <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
 <script type="text/javascript" src="http://s.sharethis.com/loader.js"></script>
+
     <head>
     <body>
         <div id="logo">Bit Trails</div>
@@ -72,14 +64,12 @@
             </div>
             </center>
             <div class="card">
-                <h1>You burn 20% more calories when you work out to Lady Gaga.</h1>
-            
+                <h1>It looks like your hours on Xbox LIVE seriously affects your grades.</h1>
             </div>
         </div>
-        <script type="text/javascript">stLight.options({publisher: "afc2e252-db4a-483b-aa3d-a33ce9b7ca1a"});</script>
-<script>
+   <script>
 var options={ "publisher": "afc2e252-db4a-483b-aa3d-a33ce9b7ca1a", "position": "left", "ad": { "visible": false, "openDelay": 5, "closeDelay": 0}, "chicklets": { "items": ["facebook", "twitter", "googleplus", "pinterest"]}};
 var st_hover_widget = new sharethis.widgets.hoverbuttons(options);
-</script>
+</script>     
     </body>
 <html>
