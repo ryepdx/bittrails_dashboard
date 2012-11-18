@@ -19,11 +19,11 @@ def hello_world():
                         data = data,
                         token = session.get('twitter_token'))
         session['tweets'] = a.data
-        session['test_dict'] = a.data[0]
+        #uncomment to see print.html in action
+        #session['test_dict'] = a.data[0]
+        #return render_template('print.html')
         
-    #switch the statement-commenting below to see 'print.html' in action
     return render_template('index.html')
-    #return render_template('print.html')
 
 ##@app.route('/oauth')
 ##def oauth():
