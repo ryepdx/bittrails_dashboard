@@ -17,5 +17,15 @@ body {
 .card {
     background-color: #FFF2AF;
     padding: 5%;
-    
+    font-family: 'Sanchez', serif;
+    font-size: 2em;
+}
+
+#logo {
+    font-family: 'Ubuntu';
+    font-size: 3em;
+    color: #FFF2AF;
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
 }

@@ -3,8 +3,42 @@
     <head>
         <title>BitTrails</title>
         <link rel="stylesheet" type="text/css" href="base.css" />
+        <link href='http://fonts.googleapis.com/css?family=Sanchez' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+            google.load('jquery', '1.6.2');
+            google.load('visualization', '1.0', {'packages':['corechart']});
+            google.setOnLoadCallback(loadCharts);
+
+            function loadCharts() {
+            var chart = new google.visualization.LineChart(document.getElementById("chart"));
+                loadChart("chart", "Astrid Tasks Completed", "Tasks Completed", getCounts);
+                loadChart("chart", "Astrid Tasks Velocity", "Velocity (sum of sizes)", getVelocities);
+            }
+
+            function loadChart(chartID, chartTitle, dataTitle, getData) {
+                var table = new google.visualization.DataTable();
+                var options = {'title':chartTitle,
+                               'height':300};
+
+                    
+                table.addColumn('date', 'Date');
+                table.addColumn('number', dataTitle);
+                data = getData;
+
+                for (date_str in data) {
+                    table.addRow([new Date(date_str), data[date_str]]);
+                }
+                    
+                chart.draw(table, options);
+            }
+        </script>
+
     <head>
     <body>
+        <div id="logo">Bit Trails</div>
         <div class="card-base">
             <div class="card">
                 You burn 20% more calories when you work out to Lady Gaga.
