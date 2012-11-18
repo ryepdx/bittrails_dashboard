@@ -50,6 +50,6 @@ def login_stub():
     return api.ApiCall(session['fitbit_access_token'], apiCall='/1/user/-/activities/log/steps/date/today/7d.json')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=DEBUG)
+    app.run(host='0.0.0.0', port=80, debug=DEBUG)
 
 
