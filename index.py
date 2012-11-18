@@ -1,29 +1,73 @@
 import sqlite3 as db
-from flask import Flask, session, url_for, redirect, render_template
+from flask import Flask, session, url_for, redirect, render_template, request
 from settings import DEBUG, APP_SECRET_KEY, DATABASE, \
                      FITBIT_ACCESS_TOKEN, TWITTER_USERNAME
 TWITTER_REQUEST = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 from twitter_auth import twitter_auth, twitter
-import requests
+from datetime import datetime
+import requests, re
 
 app = Flask(__name__)
 app.register_blueprint(twitter_auth)
 app.secret_key = APP_SECRET_KEY
 
+## NOTA BENE:
+## serving print.html is used to expose code like a print statement
+##  if availuable, session['test_value'] will be printed
+##  if availuable, each item in session['test_list'] will be printed
+##      if session['test_list_key'] exists, item[session['test_list_key']]
+##      will be printed in place of item
+##  if availuable, each key/value pair in session['test_dict'] will be printed
+
+def convert_twitter_time(time_string):
+    a = re.search("\+[0-9]{4} ", time_string)
+    time_string = time_string[:a.start()]+time_string[a.end():].strip()
+    time = datetime.strptime(time_string, "%a %b %d %H:%M:%S %Y")
+    return time.strftime("%Y-%m-%d %H:%M:%S")
+
+def get_tweet_data(user, count):
+    tweets = list()
+    while (count > 0):
+        #keep track of how many tweets to get
+        get = 30
+        if (count < 30):
+            get = count
+        count -= get
+        data = {"screen_name" : user,
+                "count" : str(get)}
+        if len(tweets): #don't get the same tweets twice
+            data["max_id"] = str(tweets[-1]['id']-1)
+        resp = twitter.get(TWITTER_REQUEST,
+                           data = data,
+                           token = session.get('twitter_token'))
+        
+        for tweet_data in resp.data:
+            tweet_slim = dict()
+            tweet_slim['id'] = tweet_data['id']
+            tweet_slim['timestamp'] = convert_twitter_time(tweet_data['created_at'])
+            tweet_slim['text'] = tweet_data['text']
+            tweets.append(tweet_slim)
+    return tweets
+    
 @app.route('/')
-def hello_world():
+def index():
+    return render_template('index.html')
+
+@app.route('/twitter')
+def twitter_demo():
     if 'twitter_user' in session:
-        data = {"screen_name" : session['twitter_user'],
-                "count" : "20"}
-        a = twitter.get(TWITTER_REQUEST,
-                        data = data,
-                        token = session.get('twitter_token'))
-        session['tweets'] = a.data
-        #uncomment to see print.html in action
-        #session['test_dict'] = a.data[0]
+        user = session['twitter_user']
+        if 'user' in request.args:
+            user = request.args['user']
+        #user = "LucianNovo"
+        session['user'] = user
+        session['tweets'] = get_tweet_data(user, 200)
+        #session['test_dict'] = request.args
+        #session['test_list'] = session['tweets']
+        #session['test_list_value_key'] = "timestamp"
         #return render_template('print.html')
         
-    return render_template('index.html')
+    return render_template('twitter.html')
 
 ##@app.route('/oauth')
 ##def oauth():

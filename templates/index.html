@@ -4,17 +4,7 @@
     <title>Bit Trails - Cross the Streams</title>
   </head>
   <body>
-    {% block user %}
-      {% if 'twitter_user' not in session %}
-        <a href="/login">Sign in with Twitter</a>
-      {% else %}
-        <a href="/logout">Sign Out {{session['twitter_user']}}</a>
-        {% if 'tweets' in session %}
-          {% for tweet in session['tweets'] %}
-            <p>{{tweet['text']}}</p>
-          {% endfor %}
-        {% endif %}
-      {% endif %}
-    {% endblock %}
+  Demos:<br/>
+  <a href="/twitter">Twitter</a>
   </body>
 </html>

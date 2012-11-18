@@ -15,7 +15,11 @@
           test list:
           {% for item in session['test_list'] %}
             <br>
-            {{item}}
+            {% if 'test_list_value_key' in session %}
+              {{item[session['test_list_value_key']]}}
+            {% else %}
+              {{item}}
+            {% endif %}
           {% endfor %}
         </div>
       {% endif %}
