@@ -32,21 +32,13 @@ def twitter_authorized(resp):
 #        return redirect(next_url)
         return 'Did not authorize.'
 
-    conn = db.connect(DATABASE)
-    cur = conn.cursor()
     session['twitter_token'] = (
         resp['oauth_token'],
         resp['oauth_token_secret']
     )
     session['twitter_user'] = resp['screen_name']
-    cur.execute('select * from users where screen_name = ?', (resp['screen_name'],))
-    if cur.rowcount == 0:
-        cur.execute('insert into users(screen_name) values (?)', (resp['screen_name'],))
-    conn.commit()
-    conn.close()
 
-    current_app.logger.info(resp)
-    return session['twitter_user']
+    return redirect('/')
 #    flash('You were signed in as %s' % resp['screen_name'])
 #    return redirect(next_url)
 
@@ -54,7 +46,7 @@ def twitter_authorized(resp):
 @twitter_auth.route('/logout')
 def logout():
     session.pop('twitter_user')
-    return redirect(request.args.get('next') or url_for('.home'))
+    return redirect(request.args.get('next') or '/')
 
 def logged_in():
     return 'twitter_user' in session
