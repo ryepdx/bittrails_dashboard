@@ -89,14 +89,20 @@ def twitter_demo():
         user = session['twitter_user']
         if 'user' in request.args:
             user = request.args['user']
+        count = 300
+        if 'count' in request.args:
+            try:
+                count = int(request.args['count'])
+            finally:
+                pass
         #user = "LucianNovo"
         session['user'] = user
-        userdata, tweets = get_tweet_data(user, 300)
+        userdata, tweets = get_tweet_data(user, count)
         utc_offset = userdata['utc_offset']
         average_day = calculate_per_day(tweets, utc_offset)
         session['tweets'] = tweets
         session['average_per_day'] = average_day
-        #clean_test_values()
+        clean_test_values()
         #session['test_value'] = 
         #session['test_dict'] = average_day
         session['test_list'] = average_day
