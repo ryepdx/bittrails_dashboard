@@ -4,6 +4,7 @@ from settings import DEBUG, APP_SECRET_KEY, DATABASE, FITBIT_ACCESS_TOKEN, \
                      TWITTER_USERNAME, FOURSQUARE_CLIENT_SECRET, \
                      FOURSQUARE_CALLBACK, FOURSQUARE_CLIENT_ID
 from settings_local import PORT, DEBUG
+from collections import OrderedDict
 
 TWITTER_REQUEST = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 from twitter_auth import twitter_auth, twitter
@@ -29,6 +30,13 @@ def twitter_time_str_to_datetime(time_string):
 
 def format_datetime(dt):
     return dt.strftime("%Y-%m-%d %H:%M:%S")
+
+def suffix(i):
+    if i < 12: return 'am'
+    else: return 'pm'
+
+def hour_str(i):
+    return str((i-1)%12+1)+suffix(i)
 
 def get_tweet_data(user, count):
     DATA_TO_KEEP = {'id' : 'id',
@@ -70,7 +78,9 @@ def calculate_per_day(tweets, offset):
         dt = twitter_time_str_to_datetime(tweet['timestamp'])
         dt += timedelta(seconds = offset)
         day[dt.hour] += 1
-    return [1.0*day[hour]/num_days for hour in day.keys()]
+    return OrderedDict([(hour_str(hour), 1.0*day[hour]) for hour in range(24)])
+##    return [hour_str(i) for i in range(24)], \
+##           [1.0*day[hour]/num_days for hour in day.keys()]
 
 def clean_test_values():
     if 'test_value' in session: del session['test_value']
@@ -105,7 +115,7 @@ def twitter_demo():
         clean_test_values()
         #session['test_value'] = 
         #session['test_dict'] = average_day
-        session['test_list'] = average_day
+        session['test_dict'] = average_day
         #session['test_list_value_key'] = 
         return render_template('print.html')
         
