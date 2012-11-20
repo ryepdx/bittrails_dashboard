@@ -1,5 +1,6 @@
 *.py[cod]
 bittrails.db
+settings_local.py
 
 # C extensions
 *.so

@@ -15,13 +15,24 @@ body {
 }
 
 .card {
-    background-color: #FFF2AF;
+    background-color: #FCFAED;
     padding: 5%;
+}
+.card h1 {
     font-family: 'Sanchez', serif;
     font-size: 2em;
+    font-weight: normal;
 }
 
-#chart { padding: 10px; }
+.card p {
+    font-family: 'Ubuntu';
+    font-size: 1em;
+}
+
+#chart {
+    padding: 10px; 
+    margin-bottom: 10px;
+}
 
 #logo {
     font-family: 'Ubuntu';
