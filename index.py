@@ -4,11 +4,13 @@ from settings import DEBUG, APP_SECRET_KEY, DATABASE, \
                      FITBIT_ACCESS_TOKEN, TWITTER_USERNAME, FOURSQUARE_CLIENT_SECRET, FOURSQUARE_CALLBACK, FOURSQUARE_CLIENT_ID
 TWITTER_REQUEST = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 from twitter_auth import twitter_auth, twitter
+from foursquare_auth import foursquare_auth, foursquare
 from datetime import datetime
 import requests, re
 
 app = Flask(__name__)
 app.register_blueprint(twitter_auth)
+app.register_blueprint(foursquare_auth)
 app.secret_key = APP_SECRET_KEY
 
 ## NOTA BENE:
@@ -65,10 +67,23 @@ def twitter_demo():
         #session['test_dict'] = request.args
         #session['test_list'] = session['tweets']
         #session['test_list_value_key'] = "timestamp"
-        #return render_template('print.html')
-        
+        #return render_template('print.html')        
     return render_template('twitter.html')
 
+
+def foursquare_demo():
+    if 'foursquare_user' in session:
+        user = session['foursquare_user']
+        if 'user' in request.args:
+            user = request.args['user']
+        #user = "LucianNovo"
+        session['user'] = user
+        session['tweets'] = get_tweet_data(user, 200)
+        #session['test_dict'] = request.args
+        #session['test_list'] = session['tweets']
+        #session['test_list_value_key'] = "timestamp"
+        #return render_template('print.html')
+    return render_template('foursquare.html')
 ##@app.route('/oauth')
 ##def oauth():
 ##    return redirect('/')
