@@ -6,6 +6,7 @@ from settings import DEBUG, APP_SECRET_KEY, DATABASE, FITBIT_ACCESS_TOKEN, \
                      TWITTER_KEY, TWITTER_SECRET
 from settings_local import PORT, DEBUG
 from collections import OrderedDict
+from blinker import signal
 
 TWITTER_REQUEST = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 from oauth_blueprint import OAuthBlueprint
@@ -25,6 +26,10 @@ app.secret_key = APP_SECRET_KEY
 ##      will be printed in place of item
 ##  if availuable, each key/value pair in session['test_dict'] will be printed
 
+def twitter_oauth_completed(sender, response):
+    session['twitter_token'] = sender.access_token
+    session['twitter_user'] = response['screen_name'] 
+
 def main():
     twitter = OAuthBlueprint('twitter',
         api_url='https://api.twitter.com/1/',
@@ -37,9 +42,14 @@ def main():
         oauth_completed_view = 'index'
     )
     
+    # Connect signal handlers to our OAuth handlers.
+    # These will handle saving access tokens and setting session variables,
+    # allowing us to our code nice and decoupled.
+    twitter.oauth_completed.connect(twitter_oauth_completed, sender=twitter)
+    
     app.register_blueprint(twitter.blueprint, url_prefix='/twitter')
     app.run(host='0.0.0.0', port=PORT, debug=DEBUG)
-
+    
 def convert_twitter_time(time_string):
     a = re.search("\+[0-9]{4} ", time_string)
     time_string = time_string[:a.start()]+time_string[a.end():].strip()
