@@ -1,6 +1,7 @@
 *.py[cod]
 bittrails.db
 settings_local.py
+*.swp
 
 # C extensions
 *.so
