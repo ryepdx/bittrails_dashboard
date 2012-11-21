@@ -5,6 +5,8 @@ from blinker import Namespace
 class OAuthBlueprint(object):
     """
     Creates the endpoints necessary to connect to a webservice using OAuth.
+    
+    Sends a blinker signal called 'oauth_completed' when OAuth is completed.
     """
     
     def __init__(self, service_name, api_url, request_token_url, 
@@ -20,10 +22,8 @@ class OAuthBlueprint(object):
         signals = Namespace()
         self.access_token = None
         self.service_name = service_name
-        self.oauth_refused_url = oauth_refused_url
-        self.oauth_completed_url = oauth_completed_url
-        
-        self.blueprint = Blueprint('%s_auth' % service_name, __name__)
+        self.oauth_refused_view = oauth_refused_view
+        self.oauth_completed_view = oauth_completed_view
         self.oauth_app = oauth.remote_app(
             service_name,
             base_url = api_url,
@@ -36,6 +36,7 @@ class OAuthBlueprint(object):
         
         self.oauth_completed = signals.signal('oauth_completed')
         
+        self.blueprint = Blueprint(service_name, __name__)
         self.blueprint.add_url_rule('/', 'index', self.generate_index())
         self.blueprint.add_url_rule('/begin_oauth', 'begin_oauth', self.generate_begin_oauth())
         self.blueprint.add_url_rule('/oauth_finished', 'oauth_finished',
@@ -49,7 +50,8 @@ class OAuthBlueprint(object):
         """
         def index():
             return render_template('oauth_blueprint/index.html',
-                                    self.service_name)
+                                    service_name = self.service_name.title(),
+                                    begin_url = url_for('.begin_oauth'))
         return index
             
     def generate_begin_oauth(self):
@@ -58,7 +60,7 @@ class OAuthBlueprint(object):
         their data on the webservice we're connecting to.
         """
         def begin_oauth():
-            url = url_for('.authorized', 
+            url = url_for('.oauth_finished', 
                 next = '/connected_%s' % self.service_name)
             resp = self.oauth_app.authorize(callback = url)
             return resp
@@ -70,7 +72,7 @@ class OAuthBlueprint(object):
         """
         @self.oauth_app.authorized_handler
         def oauth_finished(resp):
-            next_url = request.args.get('next') or url_for(self.oauth_refused_view)
+            next_url = request.args.get('next') or self.oauth_refused_url
             if resp is None:
                 return redirect(next_url)
             
@@ -79,7 +81,7 @@ class OAuthBlueprint(object):
                 resp['oauth_token_secret']
             )
             
-            self.oauth_completed.send(self, resp)
+            self.oauth_completed.send(self, response = resp)
             
             return redirect(url_for(self.oauth_completed_view))
         return oauth_finished

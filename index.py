@@ -26,17 +26,19 @@ app.secret_key = APP_SECRET_KEY
 ##  if availuable, each key/value pair in session['test_dict'] will be printed
 
 def main():
-    twitter_oauth = OAuthBlueprint('twitter',
-    api_url='https://api.twitter.com/1/',
-    request_token_url='https://api.twitter.com/oauth/request_token',
-    access_token_url='https://api.twitter.com/oauth/access_token',
-    authorize_url='https://api.twitter.com/oauth/authenticate',
-    consumer_key=TWITTER_KEY,
-    consumer_secret=TWITTER_SECRET,
-    oauth_refused_view = 'index',
-    oauth_completed_view = 'index')
+    twitter = OAuthBlueprint('twitter',
+        api_url='https://api.twitter.com/1/',
+        request_token_url='https://api.twitter.com/oauth/request_token',
+        access_token_url='https://api.twitter.com/oauth/access_token',
+        authorize_url='https://api.twitter.com/oauth/authenticate',
+        consumer_key=TWITTER_KEY,
+        consumer_secret=TWITTER_SECRET,
+        oauth_refused_view = 'index',
+        oauth_completed_view = 'index'
+    )
     
-    app.register_blueprint(twitter_oauth)
+    app.register_blueprint(twitter.blueprint, url_prefix='/twitter')
+    app.run(host='0.0.0.0', port=PORT, debug=DEBUG)
 
 def convert_twitter_time(time_string):
     a = re.search("\+[0-9]{4} ", time_string)
@@ -111,8 +113,7 @@ def clean_test_values():
  
 @app.route('/')
 def index():
-    return redirect('/static/splash/index.html')
-    #return render_template('index.html')
+    return render_template('index.html')
 
 @app.route('/twitter_demo')
 def twitter_demo():
@@ -201,5 +202,5 @@ def correlate():
     
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=PORT, debug=DEBUG)
+    main()
 
