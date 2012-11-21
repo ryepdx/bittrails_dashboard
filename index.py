@@ -2,18 +2,18 @@ import sqlite3 as db
 from flask import Flask, session, url_for, redirect, render_template, request
 from settings import DEBUG, APP_SECRET_KEY, DATABASE, FITBIT_ACCESS_TOKEN, \
                      TWITTER_USERNAME, FOURSQUARE_CLIENT_SECRET, \
-                     FOURSQUARE_CALLBACK, FOURSQUARE_CLIENT_ID
+                     FOURSQUARE_CALLBACK, FOURSQUARE_CLIENT_ID, \
+                     TWITTER_KEY, TWITTER_SECRET
 from settings_local import PORT, DEBUG
 from collections import OrderedDict
 
 TWITTER_REQUEST = "https://api.twitter.com/1.1/statuses/user_timeline.json"
-from twitter_auth import twitter_auth, twitter
+from oauth_blueprint import OAuthBlueprint
 from foursquare_auth import foursquare_auth, foursquare
 from datetime import datetime
 import requests, re
 
 app = Flask(__name__)
-app.register_blueprint(twitter_auth)
 app.register_blueprint(foursquare_auth)
 app.secret_key = APP_SECRET_KEY
 
@@ -24,6 +24,19 @@ app.secret_key = APP_SECRET_KEY
 ##      if session['test_list_key'] exists, item[session['test_list_key']]
 ##      will be printed in place of item
 ##  if availuable, each key/value pair in session['test_dict'] will be printed
+
+def main():
+    twitter_oauth = OAuthBlueprint('twitter',
+    api_url='https://api.twitter.com/1/',
+    request_token_url='https://api.twitter.com/oauth/request_token',
+    access_token_url='https://api.twitter.com/oauth/access_token',
+    authorize_url='https://api.twitter.com/oauth/authenticate',
+    consumer_key=TWITTER_KEY,
+    consumer_secret=TWITTER_SECRET,
+    oauth_refused_view = 'index',
+    oauth_completed_view = 'index')
+    
+    app.register_blueprint(twitter_oauth)
 
 def convert_twitter_time(time_string):
     a = re.search("\+[0-9]{4} ", time_string)
@@ -101,7 +114,7 @@ def index():
     return redirect('/static/splash/index.html')
     #return render_template('index.html')
 
-@app.route('/twitter')
+@app.route('/twitter_demo')
 def twitter_demo():
     if 'twitter_user' in session:
         user = session['twitter_user']
