@@ -3,7 +3,8 @@ from flask import Flask, session, url_for, redirect, render_template, request
 from settings import DEBUG, APP_SECRET_KEY, DATABASE, FITBIT_ACCESS_TOKEN, \
                      TWITTER_USERNAME, FOURSQUARE_CLIENT_SECRET, \
                      FOURSQUARE_CALLBACK, FOURSQUARE_CLIENT_ID, \
-                     TWITTER_KEY, TWITTER_SECRET
+                     TWITTER_KEY, TWITTER_SECRET, FOURSQUARE_CLIENT_ID, \
+                     FOURSQUARE_CLIENT_SECRET
 from settings_local import PORT, DEBUG
 from collections import OrderedDict
 from blinker import signal
@@ -28,9 +29,18 @@ app.secret_key = APP_SECRET_KEY
 
 def twitter_oauth_completed(sender, response):
     session['twitter_token'] = sender.access_token
-    session['twitter_user'] = response['screen_name'] 
+    session['twitter_user'] = response.content['screen_name'] 
+    
+def foursquare_oauth_completed(sender, response):
+    session['foursquare_token'] = sender.access_token
+    session['foursquare_user'] = response.content['screen_name'] 
 
 def main():
+    app.config.update(
+        TWITTER_CONSUMER_KEY = TWITTER_KEY,
+        TWITTER_CONSUMER_SECRET = TWITTER_SECRET
+    )
+    
     twitter = OAuthBlueprint('twitter',
         api_url='https://api.twitter.com/1/',
         request_token_url='https://api.twitter.com/oauth/request_token',
@@ -42,12 +52,25 @@ def main():
         oauth_completed_view = 'index'
     )
     
+    foursquare = OAuthBlueprint('foursquare',
+        api_url='https://api.foursquare.com/v2/',
+        request_token_url = 'https://foursquare.com/oauth2/access_token',
+        access_token_url ='https://foursquare.com/oauth2/access_token',
+        authorize_url = 'https://foursquare.com/oauth2/authenticate',
+        consumer_key = FOURSQUARE_CLIENT_ID, 
+        consumer_secret = FOURSQUARE_CLIENT_SECRET,
+        oauth_refused_view = 'index',
+        oauth_completed_view = 'index'
+    )
+    
     # Connect signal handlers to our OAuth handlers.
     # These will handle saving access tokens and setting session variables,
     # allowing us to our code nice and decoupled.
     twitter.oauth_completed.connect(twitter_oauth_completed, sender=twitter)
+    foursquare.oauth_completed.connect(foursquare_oauth_completed, sender=foursquare)
     
     app.register_blueprint(twitter.blueprint, url_prefix='/twitter')
+    app.register_blueprint(foursquare.blueprint, url_prefix='/foursquare')
     app.run(host='0.0.0.0', port=PORT, debug=DEBUG)
     
 def convert_twitter_time(time_string):
@@ -153,7 +176,7 @@ def twitter_demo():
         
     return render_template('twitter.html')
 
-
+@app.route('/foursquare_demo')
 def foursquare_demo():
     if 'foursquare_user' in session:
         user = session['foursquare_user']

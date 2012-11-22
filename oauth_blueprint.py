@@ -1,5 +1,6 @@
-from flask_oauth import OAuth
-from flask import redirect, url_for, request, Blueprint, render_template
+#from flask_oauth import OAuth
+from flask_rauth import RauthOAuth1, RauthOAuth2
+from flask import redirect, url_for, request, Blueprint, render_template, current_app
 from blinker import Namespace
 
 class OAuthBlueprint(object):
@@ -18,14 +19,13 @@ class OAuthBlueprint(object):
         connecting to an OAuth-protected webservice.
         """
         
-        oauth = OAuth()  
         signals = Namespace()
         self.access_token = None
         self.service_name = service_name
         self.oauth_refused_view = oauth_refused_view
         self.oauth_completed_view = oauth_completed_view
-        self.oauth_app = oauth.remote_app(
-            service_name,
+        self.oauth_app = RauthOAuth1(
+            name = service_name,
             base_url = api_url,
             request_token_url = request_token_url,
             access_token_url = access_token_url,
@@ -61,7 +61,7 @@ class OAuthBlueprint(object):
         """
         def begin_oauth():
             url = url_for('.oauth_finished', 
-                next = '/connected_%s' % self.service_name)
+                next = '/connected_%s' % self.service_name, _external = True)
             resp = self.oauth_app.authorize(callback = url)
             return resp
         return begin_oauth
@@ -71,16 +71,12 @@ class OAuthBlueprint(object):
         Creates the endpoint that handles a successful OAuth completion.
         """
         @self.oauth_app.authorized_handler
-        def oauth_finished(resp):
+        def oauth_finished(resp, access_token):
             next_url = request.args.get('next') or self.oauth_refused_url
             if resp is None:
                 return redirect(next_url)
             
-            self.access_token = (
-                resp['oauth_token'],
-                resp['oauth_token_secret']
-            )
-            
+            self.access_token = access_token
             self.oauth_completed.send(self, response = resp)
             
             return redirect(url_for(self.oauth_completed_view))
