@@ -10,13 +10,11 @@ from collections import OrderedDict
 from blinker import signal
 
 TWITTER_REQUEST = "https://api.twitter.com/1.1/statuses/user_timeline.json"
-from oauth_blueprint import OAuthBlueprint
-from foursquare_auth import foursquare_auth, foursquare
+from oauth_blueprint import OAuthBlueprint, OAuth2Blueprint
 from datetime import datetime
 import requests, re
 
 app = Flask(__name__)
-app.register_blueprint(foursquare_auth)
 app.secret_key = APP_SECRET_KEY
 
 ## NOTE:
@@ -33,7 +31,6 @@ def twitter_oauth_completed(sender, response):
     
 def foursquare_oauth_completed(sender, response):
     session['foursquare_token'] = sender.access_token
-    session['foursquare_user'] = response.content['screen_name'] 
 
 def main():
     app.config.update(
@@ -41,20 +38,21 @@ def main():
         TWITTER_CONSUMER_SECRET = TWITTER_SECRET
     )
     
-    twitter = OAuthBlueprint('twitter',
-        api_url='https://api.twitter.com/1/',
-        request_token_url='https://api.twitter.com/oauth/request_token',
-        access_token_url='https://api.twitter.com/oauth/access_token',
-        authorize_url='https://api.twitter.com/oauth/authenticate',
-        consumer_key=TWITTER_KEY,
-        consumer_secret=TWITTER_SECRET,
+    twitter = OAuthBlueprint(
+        name = 'twitter',
+        base_url = 'https://api.twitter.com/1/',
+        request_token_url = 'https://api.twitter.com/oauth/request_token',
+        access_token_url = 'https://api.twitter.com/oauth/access_token',
+        authorize_url = 'https://api.twitter.com/oauth/authenticate',
+        consumer_key = TWITTER_KEY,
+        consumer_secret = TWITTER_SECRET,
         oauth_refused_view = 'index',
         oauth_completed_view = 'index'
     )
     
-    foursquare = OAuthBlueprint('foursquare',
-        api_url='https://api.foursquare.com/v2/',
-        request_token_url = 'https://foursquare.com/oauth2/access_token',
+    foursquare = OAuth2Blueprint(
+        name = 'foursquare',
+        base_url = 'https://api.foursquare.com/v2/',
         access_token_url ='https://foursquare.com/oauth2/access_token',
         authorize_url = 'https://foursquare.com/oauth2/authenticate',
         consumer_key = FOURSQUARE_CLIENT_ID, 
