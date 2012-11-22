@@ -1,6 +1,7 @@
 from oauth_blueprint import OAuthBlueprint, OAuth2Blueprint
 from settings import TWITTER_KEY, TWITTER_SECRET, \
-                      FOURSQUARE_CLIENT_ID, FOURSQUARE_CLIENT_SECRET
+                      FOURSQUARE_CLIENT_ID, FOURSQUARE_CLIENT_SECRET, \
+                      FITBIT_KEY, FITBIT_SECRET
 
 OAUTH_SETTINGS = [
     {
@@ -23,10 +24,21 @@ OAUTH_SETTINGS = [
         'consumer_secret': FOURSQUARE_CLIENT_SECRET,
         'oauth_refused_view': 'home.index',
         'oauth_completed_view': 'home.index'
-    } 
+    },
+    {
+        'name': 'fitbit',
+        'base_url': 'http://api.fitbit.com/',
+        'request_token_url': 'http://api.fitbit.com/oauth/request_token',
+        'access_token_url': 'http://api.fitbit.com/oauth/access_token',
+        'authorize_url': 'http://api.fitbit.com/oauth/authorize',
+        'consumer_key': FITBIT_KEY, 
+        'consumer_secret': FITBIT_SECRET,
+        'oauth_refused_view': 'home.index',
+        'oauth_completed_view': 'home.index'
+    }
 ]
 
-def register_oauth_services(app):
+def register_auth_blueprints(app):
     oauth_services = {}
      
     for settings in OAUTH_SETTINGS:

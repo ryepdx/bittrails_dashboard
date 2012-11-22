@@ -1,5 +1,5 @@
 from flask_rauth import RauthOAuth1, RauthOAuth2
-from flask import redirect, url_for, request, Blueprint, render_template, current_app
+from flask import redirect, url_for, request, Blueprint, render_template
 from blinker import Namespace
 
 class OAuthBlueprintBase(object):
