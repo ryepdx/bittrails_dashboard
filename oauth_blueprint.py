@@ -27,10 +27,10 @@ class OAuthBlueprintBase(object):
         
         self.oauth_completed = signals.signal('oauth_completed')
         
-        self.blueprint = Blueprint(name, __name__)
+        self.blueprint = Blueprint('oauth_%s' % name, __name__)
         self.blueprint.add_url_rule('/', 'index', self.generate_index())
-        self.blueprint.add_url_rule('/begin_oauth', 'begin_oauth', self.generate_begin_oauth())
-        self.blueprint.add_url_rule('/oauth_finished', 'oauth_finished',
+        self.blueprint.add_url_rule('/begin', 'begin', self.generate_begin_oauth())
+        self.blueprint.add_url_rule('/finished', 'finished',
             self.generate_oauth_finished())
         self.generate_get_oauth_token()
     
@@ -42,7 +42,7 @@ class OAuthBlueprintBase(object):
         def index():
             return render_template('oauth_blueprint/index.html',
                                     service_name = self.name.title(),
-                                    begin_url = url_for('.begin_oauth'))
+                                    begin_url = url_for('.begin'))
         return index
             
     def generate_begin_oauth(self):
@@ -51,7 +51,7 @@ class OAuthBlueprintBase(object):
         their data on the webservice we're connecting to.
         """
         def begin_oauth():
-            url = url_for('.oauth_finished', _external = True)
+            url = url_for('.finished', _external = True)
             resp = self.oauth_app.authorize(callback = url)
             return resp
         return begin_oauth
