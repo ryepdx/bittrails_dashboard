@@ -2,9 +2,9 @@ from flask import Blueprint, session, request
 from datetime import datetime
 
 TWITTER_REQUEST = "https://api.twitter.com/1.1/statuses/user_timeline.json"
-twitter_demo = Blueprint('twitter_demo', __name__)
+app = Blueprint('twitter_demo', __name__)
 
-@twitter_demo.route('/twitter_demo')
+@app.route('/')
 def twitter_demo():
     if 'twitter_user' in session:
         user = session['twitter_user']
