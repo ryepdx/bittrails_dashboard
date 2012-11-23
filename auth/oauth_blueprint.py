@@ -16,11 +16,8 @@ class OAuthBlueprintBase(AccessTokenMixin):
     Sends a blinker signal called 'oauth_completed' when OAuth is completed.
     """
     
-    def __init__(self, name, base_url,
-    access_token_url, authorize_url, consumer_key, consumer_secret,
-    oauth_refused_view = '.index',
-    oauth_completed_view = '.index',
-    request_token_url = None):
+    def __init__(self, name, oauth_refused_view = '.index',
+    oauth_completed_view = '.index'):
         """
         Dynamically builds views and creates endpoints in the routing table for
         connecting to an OAuth-protected webservice.
@@ -95,22 +92,23 @@ class OAuthBlueprint(OAuthBlueprintBase):
     Sends a blinker signal called 'oauth_completed' when OAuth is completed.
     """
     
-    def __init__(self, **kwargs):
+    def __init__(self, name, base_url, request_token_url, access_token_url,
+    authorize_url, consumer_key, consumer_secret, **kwargs):
         """
         Dynamically builds views and creates endpoints in the routing table for
         connecting to an OAuth-protected webservice.
         """
         
         self.api = OAuth(
-            name = kwargs['name'],
-            base_url = kwargs['base_url'],
-            request_token_url = kwargs['request_token_url'],
-            access_token_url = kwargs['access_token_url'],
-            authorize_url = kwargs['authorize_url'],
-            consumer_key = kwargs['consumer_key'],
-            consumer_secret = kwargs['consumer_secret']
+            name = name,
+            base_url = base_url,
+            request_token_url = request_token_url,
+            access_token_url = access_token_url,
+            authorize_url = authorize_url,
+            consumer_key = consumer_key,
+            consumer_secret = consumer_secret
         )
-        return super(OAuthBlueprint, self).__init__(**kwargs)
+        return super(OAuthBlueprint, self).__init__(name, **kwargs)
             
 class OAuth2Blueprint(OAuthBlueprintBase):
     """
@@ -119,19 +117,20 @@ class OAuth2Blueprint(OAuthBlueprintBase):
     Sends a blinker signal called 'oauth_completed' when OAuth is completed.
     """
     
-    def __init__(self, **kwargs):
+    def __init__(self, name, base_url, access_token_url, authorize_url, 
+    consumer_key, consumer_secret, **kwargs):
         """
         Dynamically builds views and creates endpoints in the routing table for
         connecting to an OAuth-protected webservice.
         """
         
         self.api = OAuth2(
-            name = kwargs['name'],
-            base_url = kwargs['base_url'],
-            access_token_url = kwargs['access_token_url'],
-            authorize_url = kwargs['authorize_url'],
-            consumer_key = kwargs['consumer_key'],
-            consumer_secret = kwargs['consumer_secret']
+            name = name,
+            base_url = base_url,
+            access_token_url = access_token_url,
+            authorize_url = authorize_url,
+            consumer_key = consumer_key,
+            consumer_secret = consumer_secret
         )
         
-        return super(OAuth2Blueprint, self).__init__(**kwargs)
+        return super(OAuth2Blueprint, self).__init__(name, **kwargs)
