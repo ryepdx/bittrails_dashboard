@@ -1,3 +1,9 @@
+from flask import Blueprint, request
+from datetime import datetime
+import auth.signals
+
+app = Blueprint('api', __name__)
+
 @app.route('/correlate')
 def correlate():
     date_format = '%Y-%m-%d %H'
@@ -24,3 +30,17 @@ def correlate():
     while max_date > min_date:
         max_date = max_date - timedelta(hours=1)
         counts_blank[max_date.strftime(date_format)] = 0 
+        
+
+def register_apis(apis):
+    
+    @app.route('/<service>/<path:endpoint>')
+    def secondary_api(service, endpoint):
+        if request.method == 'GET':
+            api_call = apis[service].get(endpoint)
+        elif request.method == 'POST':
+            api_call = apis[service].post(endpoint, data = request.form)
+            
+        return api_call.response.content
+        
+auth.signals.blueprints_registered.connect(register_apis)

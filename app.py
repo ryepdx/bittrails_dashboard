@@ -4,21 +4,15 @@ from auth import register_auth_blueprints
 
 import home.views
 import twitter_demo.views
-
-def oauth_completed(sender, response):
-    session['%s_token' % sender.name] = sender.access_token
+import api.views
 
 def main():
     app = Flask(__name__)
     app.secret_key = APP_SECRET_KEY
+    register_auth_blueprints(app)
     app.register_blueprint(home.views.app)
     app.register_blueprint(twitter_demo.views.app, url_prefix = '/twitter_demo')
-    oauth_services = register_auth_blueprints(app)
-    
-    # Connect the OAuth signal handlers.
-    for service in oauth_services:
-        oauth_services[service].oauth_completed.connect(
-            oauth_completed, sender = oauth_services[service])
+    app.register_blueprint(api.views.app, url_prefix = '/api')
     
     app.run(host = '0.0.0.0', port = PORT, debug = DEBUG)
         
