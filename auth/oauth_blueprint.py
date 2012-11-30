@@ -2,11 +2,14 @@ from flask_rauth import RauthOAuth1, RauthOAuth2, session
 from flask import redirect, url_for, request, Blueprint, render_template
 from blinker import Namespace
 from auth_settings import TOKENS_KEY
+from auth import signals
 
-def oauth_completed(sender, access_token):
+def oauth_completed(sender, response, access_token):
     if TOKENS_KEY not in session:
         session[TOKENS_KEY] = {}
     session[TOKENS_KEY][sender.name] = access_token
+    
+signals.oauth_completed.connect(oauth_completed)
 
 class OAuthBlueprintBase(object):
     """
@@ -26,9 +29,6 @@ class OAuthBlueprintBase(object):
         self.name = name
         self.oauth_refused_view = oauth_refused_view
         self.oauth_completed_view = oauth_completed_view
-        
-        self.oauth_completed = signals.signal('oauth_completed')
-        self.oauth_completed.connect(oauth_completed, sender=self)
         
         self.blueprint = Blueprint('oauth_%s' % name, __name__)
         self.blueprint.add_url_rule('/', 'index', self.generate_index())
@@ -67,12 +67,11 @@ class OAuthBlueprintBase(object):
             if resp is None or resp == 'access_denied':
                 return redirect(self.oauth_refused_url)
             
-            return resp
-            self.oauth_completed.send(self, access_token = access_token)
+            signals.oauth_completed.send(self, response = resp,
+                access_token = access_token)
             
             return redirect(url_for(self.oauth_completed_view))
         return oauth_finished
-
 
 class OAuth(RauthOAuth1):
     def request(self, method, uri, **kwargs):
@@ -83,7 +82,6 @@ class OAuth2(RauthOAuth2):
     def request(self, method, uri, **kwargs):
         return super(OAuth2, self).request(method, uri,
             access_token = session[TOKENS_KEY][self.name], **kwargs)
-
 
 class OAuthBlueprint(OAuthBlueprintBase):
     """

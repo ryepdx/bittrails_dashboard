@@ -43,4 +43,4 @@ def register_apis(apis):
             
         return api_call.response.content
         
-auth.signals.blueprints_registered.connect(register_apis)
+auth.signals.services_registered.connect(register_apis)

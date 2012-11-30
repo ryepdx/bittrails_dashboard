@@ -1,8 +1,8 @@
 from flask import Blueprint, request, render_template, url_for, session, flash
 from register.forms import RegistrationForm
 from register.models import User
+from register.signals import user_registered
 from auth.auth_settings import TOKENS_KEY
-from auth.signals import user_registered
 
 app = Blueprint('register', __name__)
 
@@ -10,7 +10,7 @@ app = Blueprint('register', __name__)
 def register():
     form = RegistrationForm(request.form, csrf_context=session)
     
-    if form.validate_on_submit():
+    if request.method == "POST" and form.validate():
         users = User.get_collection()
         if not users.find_one({"email":form.email.data}):
             users.insert(User(email = form.email.data,
@@ -29,7 +29,7 @@ def register():
 def confirmation_sent():
     return render_template('%s/confirmation_sent.html' % app.name)
 
-@module.route('/confirm/<user_id>')
+@app.route('/confirm/<user_id>')
 def confirm(user_id):
     """
     Activate user function.

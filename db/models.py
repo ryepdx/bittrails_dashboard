@@ -14,3 +14,9 @@ class Model(object):
 
     def __getitem__(self, item):
         return self.attrs[item]
+        
+    def __getattr__(self, name):
+        return self.attrs[name]
+        
+    def __setattr__(self, name, value):
+        self.attrs[name] = value

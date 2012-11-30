@@ -5,7 +5,7 @@ from settings import TWITTER_KEY, TWITTER_SECRET, \
                       FITBIT_KEY, FITBIT_SECRET
 from auth import signals
 
-def get_services():
+def get_blueprints():
     return [
         OAuthBlueprint(
             name = 'twitter',
@@ -43,12 +43,13 @@ def get_services():
 
 def register_auth_blueprints(app):
     oauth_services = {}
-     
-    for service in get_services():
-        app.register_blueprint(service.blueprint,
-            url_prefix = '/auth/%s' % service.name)
-        oauth_services[service.name] = service.api
-        
-    signals.blueprints_registered.send(oauth_services)
+    blueprints = get_blueprints()
+    
+    for blueprint in blueprints:
+        app.register_blueprint(blueprint.blueprint,
+            url_prefix = '/auth/%s' % blueprint.name)
+        oauth_services[blueprint.name] = blueprint.api
+    
+    signals.services_registered.send(oauth_services)
     
     return oauth_services

@@ -5,6 +5,10 @@
     <p>
         <a href="/auth/twitter/?next={{ register_url }}"{%
         if "twitter" in selected %} class="selected"{% endif %}>Twitter</a>
+        
+        <a href="/auth/foursquare/?next={{ register_url }}"{%
+        if "foursquare" in selected %} class="selected"{% endif %}>Foursquare</a>
+        
         <form action='' method="post">
         {{ form.csrf_token }}
         {{ form.email.label }}: {{ form.email}}
