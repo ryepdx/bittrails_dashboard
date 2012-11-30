@@ -2,10 +2,14 @@
 <html>
   <head>
     <title>Bit Trails - Cross the Streams</title>
+    <link rel='stylesheet' href='/static/stylesheets/foundation.min.css' />
+    <link rel='stylesheet' href='/static/stylesheets/base.css' />
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
   </head>
   <body>
-  Demos:<br/>
-  <a href="/auth/twitter">Twitter</a><br/>
-  <a href="/auth/foursquare">FourSquare</a>
-  </body>
+      <div class="twelve columns">
+          <h1>Bit Trails</h1>
+      </div>
+    {% block content %}{% endblock %}
+    </body>
 </html>

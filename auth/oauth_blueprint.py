@@ -1,15 +1,14 @@
 from flask_rauth import RauthOAuth1, RauthOAuth2, session
 from flask import redirect, url_for, request, Blueprint, render_template
 from blinker import Namespace
+from auth_settings import TOKENS_KEY
 
 def oauth_completed(sender, access_token):
-    session[sender.access_token_key()] = access_token
+    if TOKENS_KEY not in session:
+        session[TOKENS_KEY] = {}
+    session[TOKENS_KEY][sender.name] = access_token
 
-class AccessTokenMixin(object):
-    def access_token_key(self):
-        return '%s_token' % self.name
-
-class OAuthBlueprintBase(AccessTokenMixin):
+class OAuthBlueprintBase(object):
     """
     Creates the endpoints necessary to connect to a webservice using OAuth.
     
@@ -68,21 +67,22 @@ class OAuthBlueprintBase(AccessTokenMixin):
             if resp is None or resp == 'access_denied':
                 return redirect(self.oauth_refused_url)
             
+            return resp
             self.oauth_completed.send(self, access_token = access_token)
             
             return redirect(url_for(self.oauth_completed_view))
         return oauth_finished
 
 
-class OAuth(RauthOAuth1, AccessTokenMixin):
+class OAuth(RauthOAuth1):
     def request(self, method, uri, **kwargs):
         return super(OAuth, self).request(method, uri,
-            oauth_token = session[self.access_token_key()], **kwargs)
+            oauth_token = session[TOKENS_KEY][self.name], **kwargs)
 
-class OAuth2(RauthOAuth2, AccessTokenMixin):
+class OAuth2(RauthOAuth2):
     def request(self, method, uri, **kwargs):
         return super(OAuth2, self).request(method, uri,
-            access_token = session[self.access_token_key()], **kwargs)
+            access_token = session[TOKENS_KEY][self.name], **kwargs)
 
 
 class OAuthBlueprint(OAuthBlueprintBase):
