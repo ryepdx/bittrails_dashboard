@@ -1,7 +1,7 @@
 from db.models import Model
 
 class User(Model):
-    table = "Users"
+    table = "users"
     
     def __init__(self, twitter_handle, access_keys, confirmed = False, **kwargs):
         super(User, self).__init__(
@@ -21,4 +21,4 @@ class User(Model):
         return not hasattr(self, '_id')
         
     def get_id(self):
-        return self._id
+        return str(self._id)

@@ -1,22 +1,13 @@
 from db import get_connection
 
-class Model(object):
-    def __init__(self, **kwargs):
-        self.attrs = kwargs
-        
-    def __dict__(self):
-        return self.attrs
-
+class Model(dict):
     @classmethod
     def get_collection(cls):
         conn = get_connection()
         return conn[cls.table]
 
-    def __getitem__(self, item):
-        return self.attrs[item]
+    def __getattr__(self, attr):
+        return self[attr]
         
-    def __getattr__(self, name):
-        return self.attrs[name]
-        
-    def __setattr__(self, name, value):
-        self.attrs[name] = value
+    def __setattr__(self, attr, value):
+        self[attr] = value

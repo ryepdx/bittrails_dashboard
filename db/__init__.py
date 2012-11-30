@@ -1,4 +1,4 @@
 import pymongo
 
 def get_connection():
-    return pymongo.MongoClient()
+    return pymongo.MongoClient().bittrails

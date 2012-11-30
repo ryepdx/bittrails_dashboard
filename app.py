@@ -1,6 +1,6 @@
 from flask import Flask, session
-from flask_mail import Mail
-from flask_login import LoginManager
+#from flask_mail import Mail
+from flask.ext.login import LoginManager
 from settings import PORT, DEBUG, APP_SECRET_KEY
 from auth import register_auth_blueprints
 
@@ -10,8 +10,7 @@ import api.views
 import register.signals
 #import register.views
 
-mail = Mail()
-login_manager = LoginManager()
+#mail = Mail()
 
 def main():
     app = Flask(__name__)
@@ -25,8 +24,9 @@ def main():
     app.register_blueprint(api.views.app, url_prefix = '/api')
     
     # Set up login and registration.
+    login_manager = LoginManager()
     login_manager.setup_app(app)
-    register.signals.connect_signals()
+    register.signals.connect_signals(app)
     
     # Run the app!
     app.run(host = '0.0.0.0', port = PORT, debug = DEBUG)
