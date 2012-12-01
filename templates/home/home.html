@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block extra_head %}
+{% if show_tooltip %}
 <link rel="stylesheet" href="/static/stylesheets/tipsy.css" />
 <script type="text/javascript" src="/static/javascripts/jquery.tipsy.js"></script>
 <script type="text/javascript">
@@ -13,13 +14,21 @@ $(document).ready(function () {
     );
 });
 </script>
+{% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="six columns buttons">
     <h2 class="subheader">Your Services</h2>
-    <img src='/static/images/buttons/twitter-dark.png' />
-    <img class='connect' title="Click here to connect your Foursquare account." src='/static/images/buttons/foursquare-light.png' />
+    {% for service in connected %}
+        <img src='/static/images/buttons/{{ service }}-dark.png' />
+    {% endfor %}
+    
+    {% for service in not_connected %}
+        <a href="/auth/{{ service }}/begin"><img class='connect'
+            title="Click here to connect your {{ service.title() }} account."
+            src='/static/images/buttons/{{ service }}-light.png' /></a>
+    {% endfor %}
 </div>
 <div class="six columns">
     <h2 class="subheader">What is Bit Trails?</h2>

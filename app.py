@@ -1,4 +1,4 @@
-from flask import Flask, session
+from flask import Flask, session, redirect
 #from flask_mail import Mail
 from flask.ext.login import LoginManager
 from settings import PORT, DEBUG, APP_SECRET_KEY
@@ -27,6 +27,12 @@ def main():
     login_manager = LoginManager()
     login_manager.setup_app(app)
     register.signals.connect_signals(app)
+    
+    if DEBUG:
+        @app.route('/clear_session')
+        def clear_session():
+            session.clear()
+            return redirect('/')
     
     # Run the app!
     app.run(host = '0.0.0.0', port = PORT, debug = DEBUG)

@@ -11,13 +11,27 @@ def index():
         return render_template('%s/index.html' % app.name,
             twitter_url = '/auth/twitter/begin')
 
-@app.route('/clear_session')
-def clear_session():
+@app.route('/logout')
+def logout():
     logout_user()
     session.clear()
     return redirect(url_for('.index'))
-        
+
 @app.route('/home')
 def home():
-    return render_template('%s/home.html' % app.name)
-
+    services = ['twitter', 'foursquare']
+    connected = []
+    not_connected = []
+    
+    for service in services:
+        if service in current_user.access_keys:
+            connected.append(service)
+        else:
+            not_connected.append(service)
+    
+    show_tooltip = (len(connected) < 2)
+    
+    return render_template('%s/home.html' % app.name,
+        show_tooltip = show_tooltip,
+        connected = connected,
+        not_connected = not_connected)
