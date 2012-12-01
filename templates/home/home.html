@@ -1,8 +1,25 @@
 {% extends "base.html" %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/stylesheets/tipsy.css" />
+<script type="text/javascript" src="/static/javascripts/jquery.tipsy.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    setTimeout(function () {
+        button = $('div.buttons img.connect:first');
+        button.tipsy({gravity: 'w', trigger: 'manual',
+            fade: true}).tipsy('show').hover(
+            function () { button.tipsy('hide'); }
+        ); }, 100
+    );
+});
+</script>
+{% endblock %}
+
 {% block content %}
-<div class="six columns">
+<div class="six columns buttons">
     <h2 class="subheader">Your Services</h2>
-    <img src='/static/images/buttons/twitter-light.png' />
+    <img src='/static/images/buttons/twitter-dark.png' />
+    <img class='connect' title="Click here to connect your Foursquare account." src='/static/images/buttons/foursquare-light.png' />
 </div>
 <div class="six columns">
     <h2 class="subheader">What is Bit Trails?</h2>
