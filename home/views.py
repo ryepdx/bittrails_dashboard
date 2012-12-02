@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, url_for, session, redirect, current_app, g
+from flask import render_template, Blueprint, url_for, session, redirect
 from flask.ext.login import logout_user, current_user
 from auth.decorators import APIs_route
 
@@ -6,10 +6,11 @@ app = Blueprint('home', __name__, template_folder='templates')
 
 @app.route('/')
 def index():
-    if current_user.is_authenticated():
-        return redirect(url_for('.home'))
-    else:
-        return render_template('%s/index.html' % app.name,
+    #if current_user.is_authenticated():
+    #    return redirect(url_for('.home'))
+    #else:
+    # TODO: Add back in a user concept.
+    return render_template('%s/index.html' % app.name,
             twitter_url = '/auth/twitter/begin')
 
 @app.route('/logout')
