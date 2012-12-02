@@ -10,6 +10,9 @@ def APIs_route(app, *args, **kwargs):
         Takes a view function and waits until the dictionary of APIs is
         available before registering it with Flask's routing table.
         '''
+        if 'endpoint' not in kwargs:
+            kwargs['endpoint'] = func.__name__
+            
         def register_route(apis):
             '''
             Receives the dictionary of APIs from the services_registered signal

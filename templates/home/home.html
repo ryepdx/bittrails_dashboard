@@ -21,14 +21,19 @@ $(document).ready(function () {
 <div class="six columns buttons">
     <h2 class="subheader">Your Services</h2>
     {% for service in connected %}
-        <img src='/static/images/buttons/{{ service }}-dark.png' />
+        <img src='/static/images/buttons/{{ service }}.png' />
     {% endfor %}
     
+    <h2 class="subheader">Available Services</h2>
     {% for service in not_connected %}
         <a href="/auth/{{ service }}/begin"><img class='connect'
             title="Click here to connect your {{ service.title() }} account."
-            src='/static/images/buttons/{{ service }}-light.png' /></a>
+            src='/static/images/buttons/{{ service }}.png' /></a>
     {% endfor %}
+    {% if not_connected|length == 0 %}
+        <p><em>You've connected all available services!</em></p>
+        <p><img src="/static/images/all_connected.jpg" /></p>
+    {% endif %}
 </div>
 <div class="six columns">
     <h2 class="subheader">Your Data</h2>
