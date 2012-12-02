@@ -1,5 +1,4 @@
 from flask import Flask, session, redirect
-#from flask_mail import Mail
 from flask.ext.login import LoginManager
 from settings import PORT, DEBUG, APP_SECRET_KEY
 from auth import register_auth_blueprints
@@ -9,12 +8,6 @@ import twitter_demo.views
 import api.views
 import register.signals
 import auth.signals
-#import register.views
-
-#mail = Mail()
-
-#app = Flask(__name__)
-APIS = {}
 
 def main():
     app = Flask(__name__)
@@ -23,8 +16,6 @@ def main():
     # Register all our routes and blueprints.
     register_auth_blueprints(app)
     app.register_blueprint(home.views.app)
-    #app.register_blueprint(register.views.app, url_prefix = '/register')
-    app.register_blueprint(twitter_demo.views.app, url_prefix = '/twitter_demo')
     app.register_blueprint(api.views.app, url_prefix = '/api')
     
     # Set up login and registration.

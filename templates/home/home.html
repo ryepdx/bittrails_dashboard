@@ -19,12 +19,12 @@ $(document).ready(function () {
 
 {% block content %}
 <div class="six columns buttons">
-    <h2 class="subheader">Your Services</h2>
+    <h3 class="subheader">Your Services</h3>
     {% for service in connected %}
         <img src='/static/images/buttons/{{ service }}.png' />
     {% endfor %}
     
-    <h2 class="subheader">Available Services</h2>
+    <h3 class="subheader">Available Services</h3>
     {% for service in not_connected %}
         <a href="/auth/{{ service }}/begin"><img class='connect'
             title="Click here to connect your {{ service.title() }} account."
@@ -35,7 +35,7 @@ $(document).ready(function () {
     {% endif %}
 </div>
 <div class="six columns">
-    <h2 class="subheader">Your Data</h2>
+    <h3 class="subheader">Your Data</h3>
     {% if tweets %}
         {% include 'home/twitter.html' %}
     {% endif %}
