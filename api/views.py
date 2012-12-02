@@ -40,7 +40,7 @@ def register_apis(apis):
             api_call = apis[service].get(endpoint)
         elif request.method == 'POST':
             api_call = apis[service].post(endpoint, data = request.form)
-            
+        
         return api_call.response.content
         
 auth.signals.services_registered.connect(register_apis)

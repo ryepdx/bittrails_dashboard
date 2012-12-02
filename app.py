@@ -8,9 +8,13 @@ import home.views
 import twitter_demo.views
 import api.views
 import register.signals
+import auth.signals
 #import register.views
 
 #mail = Mail()
+
+#app = Flask(__name__)
+APIS = {}
 
 def main():
     app = Flask(__name__)
@@ -36,6 +40,6 @@ def main():
     
     # Run the app!
     app.run(host = '0.0.0.0', port = PORT, debug = DEBUG)
-        
+
 if __name__ == '__main__':
     main()

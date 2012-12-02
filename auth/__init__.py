@@ -1,5 +1,5 @@
 from blinker import Namespace
-from oauth_blueprint import OAuthBlueprint, OAuth2Blueprint
+from oauth_blueprint import (OAuthBlueprint, OAuth2Blueprint, FoursquareOAuth)
 from settings import TWITTER_KEY, TWITTER_SECRET, \
                       FOURSQUARE_CLIENT_ID, FOURSQUARE_CLIENT_SECRET, \
                       FITBIT_KEY, FITBIT_SECRET
@@ -26,7 +26,8 @@ def get_blueprints():
             consumer_key = FOURSQUARE_CLIENT_ID, 
             consumer_secret = FOURSQUARE_CLIENT_SECRET,
             oauth_refused_view = 'home.index',
-            oauth_completed_view = 'home.index'
+            oauth_completed_view = 'home.index',
+            oauth_class = FoursquareOAuth
         ),
         OAuthBlueprint(
             name = 'fitbit',

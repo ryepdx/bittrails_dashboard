@@ -11,6 +11,11 @@ def oauth_completed(sender, response, access_token):
     
 signals.oauth_completed.connect(oauth_completed)
 
+'''
+TODO: Split the below class into two classes? Right now it mixes the OAuth API
+concept and the Blueprint concept.
+'''
+
 class OAuthBlueprintBase(object):
     """
     Creates the endpoints necessary to connect to a webservice using OAuth.
@@ -74,14 +79,27 @@ class OAuthBlueprintBase(object):
         return oauth_finished
 
 class OAuth(RauthOAuth1):
-    def request(self, method, uri, **kwargs):
-        return super(OAuth, self).request(method, uri,
-            oauth_token = session[TOKENS_KEY][self.name], **kwargs)
+    def request(self, method, uri, user = None, **kwargs):
+        if user:
+            return super(OAuth, self).request(method, uri,
+                oauth_token = user.access_keys[self.name], **kwargs)
+        else:
+            return super(OAuth, self).request(method, uri, **kwargs)
 
 class OAuth2(RauthOAuth2):
-    def request(self, method, uri, **kwargs):
-        return super(OAuth2, self).request(method, uri,
-            access_token = session[TOKENS_KEY][self.name], **kwargs)
+    def request(self, method, uri, user = None, **kwargs):
+        if user:
+            return super(OAuth2, self).request(method, uri,
+                access_token = user.access_keys[self.name], **kwargs)
+        else:
+            return super(OAuth2, self).request(method, uri, **kwargs)
+
+class FoursquareOAuth(OAuth2):
+    def request(self, method, uri, user = None, data = {}, **kwargs):
+        uri = uri + '&oauth_token=%s' % user.access_keys[self.name]
+        return super(FoursquareOAuth, self).request(method, uri,
+            user = user, **kwargs)
+            
 
 class OAuthBlueprint(OAuthBlueprintBase):
     """
@@ -116,13 +134,13 @@ class OAuth2Blueprint(OAuthBlueprintBase):
     """
     
     def __init__(self, name, base_url, access_token_url, authorize_url, 
-    consumer_key, consumer_secret, **kwargs):
+    consumer_key, consumer_secret, oauth_class = OAuth2, **kwargs):
         """
         Dynamically builds views and creates endpoints in the routing table for
         connecting to an OAuth-protected webservice.
         """
         
-        self.api = OAuth2(
+        self.api = oauth_class(
             name = name,
             base_url = base_url,
             access_token_url = access_token_url,
