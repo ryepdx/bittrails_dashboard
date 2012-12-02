@@ -1,8 +1,10 @@
 from blinker import Namespace
 from oauth_blueprint import (OAuthBlueprint, OAuth2Blueprint, FoursquareOAuth)
-from settings import TWITTER_KEY, TWITTER_SECRET, \
-                      FOURSQUARE_CLIENT_ID, FOURSQUARE_CLIENT_SECRET, \
-                      FITBIT_KEY, FITBIT_SECRET
+from settings import (TWITTER_KEY, TWITTER_SECRET, 
+                      FOURSQUARE_CLIENT_ID, FOURSQUARE_CLIENT_SECRET, 
+                      FITBIT_KEY, FITBIT_SECRET,
+                      LASTFM_KEY, LASTFM_SECRET)
+                      
 from auth import signals
 
 def get_blueprints():
@@ -39,7 +41,17 @@ def get_blueprints():
             consumer_secret = FITBIT_SECRET,
             oauth_refused_view = 'home.index',
             oauth_completed_view = 'home.index'
-        )
+        ),
+        #LastfmBlueprint(
+        #    name = 'last.fm',
+        #    base_url = 'http://www.last.fm/api/',
+        #    access_token_url = 'https://foursquare.com/oauth2/access_token',
+        #    authorize_url = 'https://last.fm/api/auth/?api_key=%s' % LASTFM_KEY,
+        #    consumer_key = LASTFM_KEY, 
+        #    consumer_secret = LASTFM_SECRET,
+        #    oauth_refused_view = 'home.index',
+        #    oauth_completed_view = 'home.index'
+        #)
     ]
 
 def register_auth_blueprints(app):
