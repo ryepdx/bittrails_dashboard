@@ -59,7 +59,7 @@ def register_auth_blueprints(app):
     blueprints = get_blueprints()
     
     for blueprint in blueprints:
-        app.register_blueprint(blueprint.blueprint,
+        app.register_blueprint(blueprint,
             url_prefix = '/auth/%s' % blueprint.name)
         oauth_services[blueprint.name] = blueprint.api
     

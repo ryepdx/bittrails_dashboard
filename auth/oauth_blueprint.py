@@ -16,7 +16,7 @@ TODO: Split the below class into two classes? Right now it mixes the OAuth API
 concept and the Blueprint concept.
 '''
 
-class OAuthBlueprintBase(object):
+class OAuthBlueprintBase(Blueprint):
     """
     Creates the endpoints necessary to connect to a webservice using OAuth.
     
@@ -29,18 +29,16 @@ class OAuthBlueprintBase(object):
         Dynamically builds views and creates endpoints in the routing table for
         connecting to an OAuth-protected webservice.
         """
-        signals = Namespace()
+        super(OAuthBlueprintBase, self).__init__(name, __name__)
         
-        self.name = name
         self.oauth_refused_view = oauth_refused_view
         self.oauth_completed_view = oauth_completed_view
         
-        self.blueprint = Blueprint('oauth_%s' % name, __name__)
-        self.blueprint.add_url_rule('/', 'index', self.generate_index())
-        self.blueprint.add_url_rule('/begin', 'begin', self.generate_begin_oauth())
-        self.blueprint.add_url_rule('/finished', 'finished',
+        self.add_url_rule('/', 'index', self.generate_index())
+        self.add_url_rule('/begin', 'begin', self.generate_begin_oauth())
+        self.add_url_rule('/finished', 'finished',
             self.generate_oauth_finished())
-    
+            
     def generate_index(self):
         """
         Creates a view that prompts the user to connect the OAuth webservice
