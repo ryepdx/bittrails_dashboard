@@ -1,6 +1,7 @@
 from flask import render_template, Blueprint, url_for, session, redirect
 from flask.ext.login import logout_user, current_user
 from auth.decorators import APIs_route
+from settings_local import BITTRAILS_API_URL, BITTRAILS_API_KEY
 
 app = Blueprint('home', __name__, template_folder='templates')
 
@@ -11,7 +12,8 @@ def index():
     #else:
     # TODO: Add back in a user concept.
     return render_template('%s/index.html' % app.name,
-            twitter_url = '/auth/twitter/begin')
+            twitter_url = '%s/bittrails/auth/twitter/%s' % (
+                BITTRAILS_API_URL, BITTRAILS_API_KEY))
 
 @app.route('/logout')
 def logout():
