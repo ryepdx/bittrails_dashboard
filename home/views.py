@@ -1,7 +1,10 @@
-from flask import render_template, Blueprint, url_for, session, redirect
+from flask_rauth import session
+from flask import render_template, Blueprint, url_for, redirect
 from flask.ext.login import logout_user, current_user
 from auth.decorators import APIs_route
-from settings_local import BITTRAILS_API_URL, BITTRAILS_API_KEY
+from settings_local import BITTRAILS_AUTH_URL
+from auth import signals
+from auth.auth_settings import TOKENS_KEY
 
 app = Blueprint('home', __name__, template_folder='templates')
 
@@ -12,8 +15,8 @@ def index():
     #else:
     # TODO: Add back in a user concept.
     return render_template('%s/index.html' % app.name,
-            twitter_url = '%s/bittrails/auth/twitter/%s' % (
-                BITTRAILS_API_URL, BITTRAILS_API_KEY))
+            twitter_url = '%s/twitter/begin' % 
+                BITTRAILS_AUTH_URL)
 
 @app.route('/logout')
 def logout():
@@ -55,3 +58,15 @@ def home(apis):
         not_connected = not_connected,
         tweets = tweets,
         checkins = checkins)
+
+
+def create_api_test(apis):
+    @app.route('/test')
+    def test():
+        return str(apis['bittrails'].get(
+            'protected', oauth_token=session[TOKENS_KEY]['bittrails']).response.content)
+            
+    @app.route('/test_realm')
+    def test():
+        return str(apis['bittrails'].get(
+            'protected_realm', oauth_token=session[TOKENS_KEY]['bittrails']).response.content)

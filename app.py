@@ -3,20 +3,27 @@ from flask.ext.login import LoginManager
 from settings import PORT, DEBUG, APP_SECRET_KEY
 from errors import register_error_pages
 
+import auth
 import home.views
 import twitter_demo.views
 
 def main():
-    app = Flask(__name__)
+    app = Flask('bittrails')
     app.secret_key = APP_SECRET_KEY
     
     register_error_pages(app)
+    auth.register_auth_blueprint(app)
     app.register_blueprint(home.views.app)
     
     # Set up login and registration.
     #login_manager = LoginManager()
     #login_manager.setup_app(app)
     
+    if DEBUG:    
+        @app.route('/url_map')
+        def url_map():
+            return str(app.url_map)
+        
     # Run the app!
     app.run(host = '0.0.0.0', port = PORT, debug = DEBUG)
 
