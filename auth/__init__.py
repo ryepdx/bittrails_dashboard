@@ -6,7 +6,7 @@ from auth import signals
 
 API = OAuth(
             name = 'bittrails',
-            base_url = 'http://localhost:5000',
+            base_url = 'http://localhost:5000/api/',
             request_token_url = 'http://localhost:5000/request_token',
             access_token_url = 'http://localhost:5000/access_token',
             authorize_url = 'http://localhost:5000/authorize',
@@ -19,7 +19,7 @@ BLUEPRINT = OAuthBlueprint(
             api = API,
             oauth_refused_view = 'home.index',
             oauth_completed_view = 'home.index',
-            realms = ['twitter']
+            realms = ['twitter', 'foursquare']
 )
 
 def register_auth_blueprint(app):

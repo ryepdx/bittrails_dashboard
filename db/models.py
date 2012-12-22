@@ -1,10 +1,23 @@
 from db import get_connection
+from settings import DATABASE
 
 class Model(dict):
     @classmethod
     def get_collection(cls):
-        conn = get_connection()
+        conn = get_connection(DATABASE)
         return conn[cls.table]
+        
+    @classmethod
+    def find_one(cls, attrs):
+        return cls.get_collection().find_one(attrs)
+    
+    @classmethod
+    def insert(cls, obj):
+        return cls.get_collection().insert(obj)
+        
+    @classmethod
+    def save(cls, obj):
+        return cls.get_collection().save(obj)
 
     def __getattr__(self, attr):
         return self[attr]

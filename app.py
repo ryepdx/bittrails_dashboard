@@ -4,6 +4,7 @@ from settings import PORT, DEBUG, APP_SECRET_KEY
 from errors import register_error_pages
 
 import auth
+import login
 import home.views
 import twitter_demo.views
 
@@ -16,8 +17,9 @@ def main():
     app.register_blueprint(home.views.app)
     
     # Set up login and registration.
-    #login_manager = LoginManager()
-    #login_manager.setup_app(app)
+    login_manager = LoginManager()
+    login_manager.setup_app(app)
+    app.login_manager.user_loader(login.load_user)  
     
     if DEBUG:    
         @app.route('/url_map')

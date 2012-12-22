@@ -5,14 +5,13 @@ from auth_settings import TOKENS_KEY, REALMS_KEY
 from auth import signals
 from requests.auth import AuthBase
 
-def oauth_completed(sender, response, access_token, realm):
-    if TOKENS_KEY not in session:
-        session[TOKENS_KEY] = {}
-        
+def oauth_completed(sender, request, access_token):
+    realm = request.args['service']
+            
     if REALMS_KEY not in session:
         session[REALMS_KEY] = []
         
-    session[TOKENS_KEY][sender.name] = access_token
+    session[TOKENS_KEY] = access_token
     
     if realm not in session[REALMS_KEY]:
         session[REALMS_KEY].append(realm)
@@ -99,16 +98,16 @@ class OAuthBlueprint(Blueprint):
             if resp is None or resp == 'access_denied':
                 return redirect(self.oauth_refused_url)
             
-            signals.oauth_completed.send(self, response = resp,
-                access_token = access_token, realm = realm)
+            signals.oauth_completed.send(
+                self, request = request, access_token = access_token)
             
             return redirect(url_for(self.oauth_completed_view))
         return oauth_finished
 
 class OAuth(RauthOAuth1):
-    def request(self, method, uri, user = None, **kwargs):
+    def request(self, method, uri, user, **kwargs):
         if user:
             return super(OAuth, self).request(method, uri,
-                oauth_token = user.access_keys[self.name], **kwargs)
+                oauth_token = user.access_key, **kwargs)
         else:
             return super(OAuth, self).request(method, uri, **kwargs)

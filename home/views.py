@@ -3,20 +3,18 @@ from flask import render_template, Blueprint, url_for, redirect
 from flask.ext.login import logout_user, current_user
 from auth.decorators import APIs_route
 from settings_local import BITTRAILS_AUTH_URL
-from auth import signals
+from auth import signals, API, BLUEPRINT
 from auth.auth_settings import TOKENS_KEY
 
 app = Blueprint('home', __name__, template_folder='templates')
 
 @app.route('/')
 def index():
-    #if current_user.is_authenticated():
-    #    return redirect(url_for('.home'))
-    #else:
-    # TODO: Add back in a user concept.
-    return render_template('%s/index.html' % app.name,
-            twitter_url = '%s/twitter/begin' % 
-                BITTRAILS_AUTH_URL)
+    if current_user.is_authenticated():
+        return redirect(url_for('.home'))
+    else:
+        return render_template('%s/index.html' % app.name,
+            twitter_url = '/auth/twitter/begin')
 
 @app.route('/logout')
 def logout():
@@ -24,14 +22,14 @@ def logout():
     session.clear()
     return redirect(url_for('.index'))
 
-@APIs_route(app, '/home')
-def home(apis):
-    services = apis.keys()
+@app.route('/home')
+def home():
     connected = []
     not_connected = []
+    services = current_user['uids'].keys()
     
-    for service in services:
-        if service in current_user.access_keys:
+    for service in BLUEPRINT.realms:
+        if service in services:
             connected.append(service)
         else:
             not_connected.append(service)
@@ -39,16 +37,20 @@ def home(apis):
     show_tooltip = (len(connected) < 2)
     
     if 'twitter' in connected:
-        tweets = apis['twitter'].get(
-            ('statuses/user_timeline.json?screen_name=%s&count=%s'
-                % (current_user.twitter_handle, 6))).content
+        tweets = API.get(
+            ('twitter/statuses/user_timeline.json?screen_name=%s&count=%s'
+                % (current_user.uids['twitter'], 6)), user = current_user).content
     else:
         tweets = None
         
     if 'foursquare' in connected:
-        checkins = apis['foursquare'].get(
-            'users/self/checkins?limit=2', user = current_user).content
-        checkins = checkins['response']['checkins']['items']
+        checkins = API.get(
+            'foursquare/users/self/checkins?limit=2', user = current_user)
+        
+        if checkins and checkins.status == 200:
+            checkins = checkins.content['response']['checkins']['items']
+        else:
+            checkins = []
     else:
         checkins = None
     
