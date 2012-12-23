@@ -6,8 +6,8 @@
 <script type="text/javascript">
 $(document).ready(function () {
     setTimeout(function () {
-        tab = $('#available');
-        tab.tipsy({gravity: 'nw', trigger: 'manual',
+        button = $('img.connect_button:first');
+        button.tipsy({gravity: 'nw', trigger: 'manual',
             fade: true}).tipsy('show').hover(
                 function () { tab.tipsy('hide');}
             ); }, 100
@@ -18,34 +18,24 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block content %}
-<h1>Your Account</h1>
-<div class="six columns">
-<h3>Datastreams</h3>
-<dl class="tabs">
-    <dd class="active"><a href="#connected">Connected</a></dd>
-    <dd id="available" title="Click here to connect more datastreams.">
-        <a href="#available">Available</a>
-    </dd>
-</dl>
-<ul class="tabs-content">
-    <li class="active" id="connectedTab">
-        {% for service in connected %}
-            <img src='/static/images/buttons/{{ service }}.png' />
-        {% endfor %}
-    </li>
-    <li id="availableTab" >
-        {% for service in not_connected %}
-            <a href="/auth/{{ service }}/begin">
-                <img title="Click here to connect your {{ service.title() }} account."
-                     src='/static/images/buttons/{{ service }}.png' />
-            </a>
-        {% endfor %}
-        {% if not_connected|length == 0 %}
-            <em>You've connected all the available datastreams!</em>
-        {% endif %}
-    </li>
-</ul>
-</div>
+
+<h1>Connected</h1>
+{% for service in connected %}
+    <img src='/static/images/buttons/{{ service }}.png' />
+{% endfor %}
+
+<h1>Available</h1>
+{% for service in not_connected %}
+    <a href="/auth/{{ service }}/begin">
+        <img title="Click here to connect your {{ service.title() }} account."
+             src='/static/images/buttons/{{ service }}.png'
+             class='connect_button' />
+    </a>
+{% endfor %}
+{% if not_connected|length == 0 %}
+    <em>You've connected all the available datastreams!</em>
+{% endif %}
+    
 {#
 <div class="three columns">    
     <h3>Your Data</h3>
