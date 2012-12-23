@@ -1,9 +1,32 @@
 body {
     padding: 0px;
     margin: 0px;
-    background-image: url(/static/images/background.png)
+    background-color: #F2F2F2;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Ubuntu';
+.top-bar {
+    background: #FFF;
+    box-shadow: 0px 0px 12px #999;
+}
+
+.divided {
+    border-right: thin solid #aaa;
+}
+
+.top-bar ul > li a:not(.button) {
+    color: #333;
+}
+
+.top-bar ul > li:not(.name):hover a,
+.top-bar ul > li:not(.name).active a {
+    color: #000;
+}
+
+.top-bar ul > li:not(.name):hover,
+.top-bar ul > li:not(.name).active {
+    background: #EEE;
+}
+
+.center-text {
+    text-align: center;
 }

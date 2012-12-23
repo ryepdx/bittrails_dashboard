@@ -4,14 +4,39 @@
     <title>Bit Trails - Cross the Streams</title>
     <link rel='stylesheet' href='/static/stylesheets/foundation.min.css' />
     <link rel='stylesheet' href='/static/stylesheets/base.css' />
-    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' href='/static/stylesheets/app.css' />
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css' />
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src='/static/javascripts/foundation.min.js'></script>
+    <script src='/static/javascripts/jquery.foundation.tabs.js'></script>
+    <script src='/static/javascripts/app.js'></script>
     {% block extra_head %}{% endblock %}
-  </head>
+  </he  ad>
   <body>
+    <nav class="top-bar" style="margin-bottom: 10px">
+        <ul class="left">
+            <li class="name"><h1><a href="#">Bit Trails <span class="subheader">Dashboard</span></a></h1></li>
+          {% if current_user.is_authenticated() %}
+          {% if request.path == url_for('.home') %} <li class="active"> {% else %} <li> {% endif %}
+          <a href="{{ url_for('.home') }}">Datastreams</a> </li>
+          {% if request.path == url_for('.charts') %} <li class="active"> {% else %} <li> {% endif %}
+          <a href="{{ url_for('.charts') }}">Charts</a> </li>
+          {% if request.path == url_for('.insights') %} <li class="active"> {% else %} <li> {% endif %}
+          <a href="{{ url_for('.insights') }}">Insights</a></li>
+          {% endif %}
+          
+        </ul>
+        <ul class="right">
+          {% if current_user.is_authenticated() %}
+          <li><a href="{{ url_for('.logout') }}">Sign Out [{{ current_user.get_username() }}]</a>
+          {% else %}
+          <li><a href="{{ url_for('.login') }}">sign in</a>
+          {% endif %}
+        </ul>
+      </nav>
       <div class="twelve columns">
-          <h1>Bit Trails <span class="subheader">Dashboard</span></h1>
+        
+        {% block content %}{% endblock %}
       </div>
-    {% block content %}{% endblock %}
     </body>
 </html>

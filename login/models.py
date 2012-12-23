@@ -23,3 +23,6 @@ class User(Model):
         
     def get_id(self):
         return unicode(self._id)
+
+    def get_username(self):
+        return self.uids['twitter']

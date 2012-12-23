@@ -16,6 +16,10 @@ def index():
         return render_template('%s/index.html' % app.name,
             twitter_url = '/auth/twitter/begin')
 
+@app.route('/login')
+def login():
+    return index()
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -61,6 +65,14 @@ def home():
         tweets = tweets,
         checkins = checkins)
 
+
+@app.route('/charts')
+def charts():
+    pass
+    
+@app.route('/insights')
+def insights():
+    pass
 
 def create_api_test(apis):
     @app.route('/test')

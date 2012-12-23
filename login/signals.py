@@ -48,8 +48,5 @@ def load_user(user_id):
 
 def connect_signals(app):
     signals = Namespace()
-    #user_registered = signals.signal('register.user_registered')
-    #user_registered.connect(send_confirmation_email)
-    
     auth.signals.oauth_completed.connect(update_user)
     app.login_manager.user_(load_user)
