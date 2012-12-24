@@ -1,0 +1,14 @@
+div.new-chart {
+    display: inline-block;
+}
+
+div.new-chart select {
+    width: auto;
+}
+
+div.new-chart input[type=submit] {
+    margin-top: 8px;
+    margin-right: 6px;
+}
+
+

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/stylesheets/charts.css" />
+{% endblock %}
+
+{% block content %}
+<div class="six columns">
+    <h1>Your Charts</h1>
+    <em>None</em>
+</div>
+
+<div class="six columns">
+    <h1>Make a New Chart</h1>
+    <div class="new-chart">
+    <form>
+        Show me my <select name="datastream">
+            <option value='1'>Twitter</option>
+        </select> <select name="aspect">
+            <option value='1'>posts</option>
+        </select> by <select name="frequency">
+            <option value='1'>week</option>
+        </select> as a <select name="chart_type">
+            <option value='1'>line chart</option>
+        </select>.<br />
+        <input class="button right" type="submit" value="Create" />
+    </form>
+    </div>
+</div>
+{% endblock%}

@@ -1,7 +1,6 @@
 from flask_rauth import session
 from flask import render_template, Blueprint, url_for, redirect
 from flask.ext.login import logout_user, current_user
-from auth.decorators import APIs_route
 from settings_local import BITTRAILS_AUTH_URL
 from auth import signals, API, BLUEPRINT
 from auth.auth_settings import TOKENS_KEY
@@ -64,11 +63,6 @@ def home():
         not_connected = not_connected,
         tweets = tweets,
         checkins = checkins)
-
-
-@app.route('/charts')
-def charts():
-    pass
     
 @app.route('/insights')
 def insights():
