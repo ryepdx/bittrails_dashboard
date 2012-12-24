@@ -34,8 +34,14 @@ $(document).ready(function () {
              class='connect_button' />
     </a>
 {% endfor %}
-{% if not_connected|length == 0 %}
+{% if not_connected|length == 0 and no_custom_streams %}
     <em>You've connected all the available datastreams!</em>
+{% else %}
+<a href="#">
+    <img src='/static/images/buttons/plus.png'
+         alt='Add a custom datastream.'
+         title='Add a custom datastream.' />
+</a>
 {% endif %}
 </div>
 

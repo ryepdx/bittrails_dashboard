@@ -5,13 +5,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="six columns">
+{#
+s<div class="six columns">
     <h1>Your Charts</h1>
     <em>None</em>
 </div>
-
+#}
 <div class="six columns">
-    <h1>Make a New Chart</h1>
+    <h1>Make a Chart</h1>
     <div class="new-chart">
     <form>
         Show me my <select name="datastream">
@@ -22,8 +23,8 @@
             <option value='1'>week</option>
         </select> as a <select name="chart_type">
             <option value='1'>line chart</option>
-        </select>.<br />
-        <input class="button right" type="submit" value="Create" />
+        </select>.
+        <input class="button" type="submit" value="Create" />
     </form>
     </div>
 </div>
