@@ -2,6 +2,61 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="/static/stylesheets/charts.css" />
+{% if data %}
+<link rel="stylesheet" href="/static/stylesheets/rickshaw.min.css" />
+<script type="text/javascript" src="/static/javascripts/d3.min.js"></script>
+<script type="text/javascript" src="/static/javascripts/d3.layout.min.js"></script>
+<script type="text/javascript" src="/static/javascripts/rickshaw.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    
+    $('#chart').click(function (e) {
+        $('#chart svg g.y_ticks, #chart svg g.y_grid, #chart div.x_tick').toggle(500);
+    })
+    
+    var time = new Rickshaw.Fixtures.Time();
+    var unit = time.unit('{{ form.frequency.data }}');
+    var time = new Rickshaw.Fixtures.Time();
+    var data = {{ data|tojson|safe }};
+    graph = new Rickshaw.Graph({
+        element: document.querySelector('#chart'),
+        height: 280,
+        renderer: '{{ form.chart_type.data }}',
+        series: [{
+            name: '{{ form.aspect.data|replace('_', ' ') }}',
+            color: 'steelblue',
+            data: data
+        }]
+    });
+    var x_axis = new Rickshaw.Graph.Axis.Time(
+        { graph: graph, timeUnit: unit });
+    var y_axis = new Rickshaw.Graph.Axis.Y({ graph: graph });
+    var hoverDetail = new Rickshaw.Graph.HoverDetail( { graph: graph } );
+    hoverDetail.onShow = function () {
+            if (this.left != hoverDetail.element.style.left) {
+                this.left = hoverDetail.element.style.left;
+                
+                this.left_px = parseInt(
+                    this.left.substring(0, this.left.length-2));
+            }
+            
+            $x_label = $('div.x_label', hoverDetail.element);
+            
+            if (this.left_px + $x_label.outerWidth() > $('body').width()) {    
+                $item = $('div.item', hoverDetail.element);
+                console.log("text")
+                $x_label.css('margin-left', "-"+ $x_label.outerWidth()+"px")
+                $item.css('margin-left', "-"+
+                    ($item.outerWidth()
+                    +$('div.dot', hoverDetail.element).outerWidth())+"px")
+                $item.addClass('overflow');
+                    
+            }
+        };
+    graph.render();
+});
+</script>
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -11,21 +66,28 @@ s<div class="six columns">
     <em>None</em>
 </div>
 #}
-<div class="six columns">
+
+{% if data %}
+<div div class="twelve columns">
+    <h1>Your {{ form.datastream.data|title }} 
+        {{ form.aspect.data|replace('_', ' ') }} 
+        by {{ form.frequency.data }}
+    </h1>
+</div>
+
+<div id="chart_container" class="twelve columns four-mobile row">
+    <div id="chart"></div>
+</div>
+{% endif %}
+
+<div div class="twelve columns">
     <h1>Make a Chart</h1>
     <div class="new-chart">
-    <form>
-        Show me my <select name="datastream">
-            <option value='1'>Twitter</option>
-        </select> <select name="aspect">
-            <option value='1'>posts</option>
-        </select> by <select name="frequency">
-            <option value='1'>week</option>
-        </select> as a <select name="chart_type">
-            <option value='1'>line chart</option>
-        </select>.
+    <form action='' method='post'>
+        Show me my {{ form.datastream }} {{ form.aspect }} by
+        {{ form.frequency }} as a {{ form.chart_type }} graph.
         <input class="button" type="submit" value="Create" />
     </form>
-    </div>
+</div>
 </div>
 {% endblock%}

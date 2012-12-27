@@ -1,3 +1,4 @@
+import time
 from flask_rauth import RauthOAuth1, session
 from flask import redirect, url_for, request, Blueprint, render_template, abort
 from blinker import Namespace
@@ -111,3 +112,24 @@ class OAuth(RauthOAuth1):
                 oauth_token = user.access_key, **kwargs)
         else:
             return super(OAuth, self).request(method, uri, **kwargs)
+            
+    def get_aspects(self):
+        return ['post_count']
+        
+    def get_frequencies(self):
+        return ['hour', 'day', 'week', 'month', 'year']
+
+    def get_chart_types(self):
+        return ['line', 'bar', 'scatterplot', 'area']
+
+    def get_chart_data(self, datastream, aspect, frequency):
+        data = [
+            ('11/26/2012', 3),
+            ('12/03/2012', 6),
+            ('12/10/2012', 13),
+            ('12/17/2012', 8),
+            ('12/24/2012', 9)
+        ]
+        return [{'x': time.mktime(time.strptime(point[0], '%m/%d/%Y')),
+                  'y': point[1]} for point in data]
+        

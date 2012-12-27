@@ -1,3 +1,7 @@
+body {
+    overflow-x: hidden;
+}
+
 div.new-chart {
     display: inline-block;
 }
@@ -9,6 +13,36 @@ div.new-chart select {
 div.new-chart input[type=submit] {
     margin-top: 18px;
     margin-right: 6px;
+    display: block;
 }
 
+#chart_container {
+    padding: 0px;
+    margin: 20px 0px;
+}
 
+#chart_container * {
+    box-sizing: content-box;
+}
+
+#chart .detail .x_label {
+    bottom: 0px;
+}
+
+.rickshaw_graph .detail .overflow.item::before {
+    content: "";
+}
+.rickshaw_graph .detail .overflow.item::after {
+    content: "\25b8";
+    color: rgba(0, 0, 0, .7);
+    position: absolute;
+    right: -.5em;
+}
+
+.y_ticks, .y_grid, .x_tick {
+    display: none;
+}
+
+.y_ticks.visible, .y_grid.visible, .x_tick.visible {
+    display: auto;
+}
