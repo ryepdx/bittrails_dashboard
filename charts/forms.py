@@ -4,7 +4,7 @@ from auth import API
 class ChartForm(Form):
     datastream = SelectField(u'Datastream')
     aspect = SelectField(u'Aspect', choices = list(
-        (key, key.replace('_', ' ')) for key in API.get_aspects()))
+        (item, key) for key, item in API.get_aspects().items()))
     frequency = SelectField(u'Frequency', choices = list(
         (key, key) for key in API.get_frequencies()))
     chart_type = SelectField(u'Chart Type', choices = list(

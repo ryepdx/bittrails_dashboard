@@ -1,7 +1,7 @@
 from flask_rauth import session
 from flask import render_template, Blueprint, url_for, redirect
 from flask.ext.login import logout_user, current_user
-from settings_local import BITTRAILS_AUTH_URL
+from settings import BITTRAILS_AUTH_URL, DEBUG
 from auth import signals, API, BLUEPRINT
 from auth.auth_settings import TOKENS_KEY
 
@@ -45,7 +45,7 @@ def home():
                 % (current_user.uids['twitter'], 6)), user = current_user).content
     else:
         tweets = None
-        
+
     if 'foursquare' in connected:
         checkins = API.get(
             'foursquare/users/self/checkins?limit=2', user = current_user)
@@ -62,7 +62,8 @@ def home():
         connected = connected,
         not_connected = not_connected,
         tweets = tweets,
-        checkins = checkins)
+        checkins = checkins,
+        DEBUG = DEBUG)
     
 @app.route('/insights')
 def insights():

@@ -1,3 +1,4 @@
+import json
 import time
 from flask_rauth import RauthOAuth1, session
 from flask import redirect, url_for, request, Blueprint, render_template, abort
@@ -108,28 +109,23 @@ class OAuthBlueprint(Blueprint):
 class OAuth(RauthOAuth1):
     def request(self, method, uri, user, **kwargs):
         if user:
+            print uri
             return super(OAuth, self).request(method, uri,
                 oauth_token = user.access_key, **kwargs)
         else:
             return super(OAuth, self).request(method, uri, **kwargs)
             
     def get_aspects(self):
-        return ['post_count']
+        return {'posts count': 'count_posts'}
         
     def get_frequencies(self):
-        return ['hour', 'day', 'week', 'month', 'year']
+        return ['day', 'week', 'month', 'year']
 
     def get_chart_types(self):
         return ['line', 'bar', 'scatterplot', 'area']
 
-    def get_chart_data(self, datastream, aspect, frequency):
-        data = [
-            ('11/26/2012', 3),
-            ('12/03/2012', 6),
-            ('12/10/2012', 13),
-            ('12/17/2012', 8),
-            ('12/24/2012', 9)
-        ]
-        return [{'x': time.mktime(time.strptime(point[0], '%m/%d/%Y')),
-                  'y': point[1]} for point in data]
+    def get_chart_data(self, user, datastream, aspect, frequency):
+        action, attribute = aspect.split('_')
+        return self.get('/api/bittrails/%s/%s/%s/by/%s/as/timestamps'
+                % (action, datastream, attribute, frequency), user = user).content
         

@@ -39,10 +39,7 @@ div.new-chart input[type=submit] {
     right: -.5em;
 }
 
-.y_ticks, .y_grid, .x_tick {
+.y_ticks, .y_grid, .x_tick, .rickshaw_graph .title {
     display: none;
-}
-
-.y_ticks.visible, .y_grid.visible, .x_tick.visible {
-    display: auto;
+    overflow: inherit;
 }

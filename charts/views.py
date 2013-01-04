@@ -17,12 +17,16 @@ def index():
     form = ChartForm(current_user, request.form)
     
     if request.method == 'POST' and form.validate():
-        data = API.get_chart_data(
-            form.datastream.data, form.aspect.data, form.frequency.data
-        )
+        data = sorted([
+            {'x': int(x), 'y': int(y)}
+            for x, y in API.get_chart_data(
+                current_user,form.datastream.data,
+                form.aspect.data, form.frequency.data
+            ).items()
+        ], key = lambda k: k['x'])
     else:
         data = None
-        
+
     return render_template('%s/index.html' % app.name,
             datastreams = datastreams,
             aspects = API.get_aspects(),

@@ -11,11 +11,11 @@
 $(document).ready(function () {
     
     $('#chart').click(function (e) {
-        $('#chart svg g.y_ticks, #chart svg g.y_grid, #chart div.x_tick').toggle(500);
+        $('#chart svg g.y_ticks, #chart svg g.y_grid, #chart div.x_tick, #chart div.title').toggle();
     })
     
     var time = new Rickshaw.Fixtures.Time();
-    var unit = time.unit('{{ form.frequency.data }}');
+    //var unit = time.unit('{{ form.frequency.data }}');
     var time = new Rickshaw.Fixtures.Time();
     var data = {{ data|tojson|safe }};
     graph = new Rickshaw.Graph({
@@ -29,7 +29,7 @@ $(document).ready(function () {
         }]
     });
     var x_axis = new Rickshaw.Graph.Axis.Time(
-        { graph: graph, timeUnit: unit });
+        { graph: graph});//, timeUnit: unit });
     var y_axis = new Rickshaw.Graph.Axis.Y({ graph: graph });
     var hoverDetail = new Rickshaw.Graph.HoverDetail( { graph: graph } );
     hoverDetail.onShow = function () {
@@ -74,15 +74,28 @@ s<div class="six columns">
         by {{ form.frequency.data }}
     </h1>
 </div>
-
+{# Breaking out of the container div. Not sure if I like this, but... #}
+</div>
 <div id="chart_container" class="twelve columns four-mobile row">
     <div id="chart"></div>
 </div>
+{# Continuing the container div. #}
+<div div class="twelve columns">
 {% endif %}
 
 <div div class="twelve columns">
     <h1>Make a Chart</h1>
     <div class="new-chart">
+        {% for field in form %}
+            {% if field.errors %}
+                {{ field.name }}:
+                <ul>
+                {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endfor %}
     <form action='' method='post'>
         Show me my {{ form.datastream }} {{ form.aspect }} by
         {{ form.frequency }} as a {{ form.chart_type }} graph.
