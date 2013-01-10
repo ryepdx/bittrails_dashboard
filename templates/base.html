@@ -18,11 +18,11 @@
             <li class="name"><h1><a href="#">Bit Trails <span class="subheader">Dashboard</span></a></h1></li>
           {% if current_user.is_authenticated() %}
           {% if request.path == url_for('home.home') %} <li class="active"> {% else %} <li> {% endif %}
-          <a href="{{ url_for('home.home') }}">Datastreams</a> </li>
+          <a href="{{ url_for('home.home') }}">Account</a> </li>
           {% if request.path == url_for('charts.index') %} <li class="active"> {% else %} <li> {% endif %}
           <a href="{{ url_for('charts.index') }}">Charts</a> </li>
               {% if request.path == url_for('insights.index') %} <li class="active"> {% else %} <li> {% endif %}
-          <a href="{{ url_for('insights.index') }}">Insights</a></li>
+          <a href="{{ url_for('insights.index') }}">Buffs</a></li>
           {% endif %}
           
         </ul>

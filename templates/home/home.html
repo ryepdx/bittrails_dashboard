@@ -45,13 +45,6 @@ $(document).ready(function () {
 {% endif %}
 </div>
 
-{% if DEBUG %}
-    {% if not tweets or 'errors' in tweets %}
-        <strong>Twitter is broken.</strong>
-    {% else %}
-        <em>Twitter is working.</em>
-    {% endif %}
-{% endif %}
 {#
 <div class="twelve columns">    
     <h3>Your Data</h3>
