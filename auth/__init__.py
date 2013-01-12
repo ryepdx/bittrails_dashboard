@@ -19,7 +19,7 @@ BLUEPRINT = OAuthBlueprint(
             api = API,
             oauth_refused_view = 'home.index',
             oauth_completed_view = 'home.index',
-            realms = ['twitter', 'foursquare']
+            realms = ['twitter', 'foursquare', 'lastfm']
 )
 
 def register_auth_blueprint(app):

@@ -25,6 +25,10 @@ div.new-chart input[type=submit] {
     box-sizing: content-box;
 }
 
+#chart_container svg {
+    padding-bottom: 30px;
+}
+
 #chart .detail .x_label {
     bottom: 0px;
 }

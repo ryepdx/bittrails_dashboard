@@ -116,7 +116,7 @@ class OAuth(RauthOAuth1):
             return super(OAuth, self).request(method, uri, **kwargs)
             
     def get_aspects(self):
-        return {'posts count': 'count_posts'}
+        return {'post counts': 'count_posts'}
         
     def get_frequencies(self):
         return ['day', 'week', 'month', 'year']
