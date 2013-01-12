@@ -1,4 +1,4 @@
-fitbit-datastream
-=================
+Bit Trails Dashboard
+====================
 
-A simple Flask app to grab Fitbit data for the Correlation Engine's consumption.
+A simple Flask app for visualizing and interacting with data amassed by Bit Trails Platform.
