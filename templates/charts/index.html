@@ -44,7 +44,6 @@ $(document).ready(function () {
             
             if (this.left_px + $x_label.outerWidth() > $('body').width()) {    
                 $item = $('div.item', hoverDetail.element);
-                console.log("text")
                 $x_label.css('margin-left', "-"+ $x_label.outerWidth()+"px")
                 $item.css('margin-left', "-"+
                     ($item.outerWidth()
@@ -69,7 +68,7 @@ s<div class="six columns">
 
 {% if data %}
 <div div class="twelve columns">
-    <h1>Your {{ form.datastream.data|title }} 
+    <h1>Your {{ form.datastream.data|replace('_', ' ')|title }} 
         {{ form.aspect.data|replace('_', ' ') }} 
         by {{ form.frequency.data }}
     </h1>

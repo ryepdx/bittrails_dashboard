@@ -13,6 +13,7 @@ import twitter_demo.views
 def main():
     app = Flask('bittrails')
     app.secret_key = APP_SECRET_KEY
+    app.config['TRAP_BAD_REQUEST_ERRORS'] = DEBUG
     
     register_error_pages(app)
     auth.register_auth_blueprint(app)
