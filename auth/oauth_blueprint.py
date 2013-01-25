@@ -109,14 +109,14 @@ class OAuthBlueprint(Blueprint):
 class OAuth(RauthOAuth1):
     def request(self, method, uri, user, **kwargs):
         if user:
-            print uri
             return super(OAuth, self).request(method, uri,
                 oauth_token = user.access_key, **kwargs)
         else:
             return super(OAuth, self).request(method, uri, **kwargs)
             
     def get_aspects(self):
-        return {'post counts': 'count_posts'}
+        response =  self.get('/api/bittrails/datastreams', user = None).content
+        return response
         
     def get_frequencies(self):
         return ['day', 'week', 'month', 'year']
@@ -125,7 +125,6 @@ class OAuth(RauthOAuth1):
         return ['line', 'bar', 'scatterplot', 'area']
 
     def get_chart_data(self, user, datastream, aspect, frequency):
-        action, attribute = aspect.split('_')
-        return self.get('/api/bittrails/%s/%s/%s/by/%s/as/timestamps'
-                % (action, datastream, attribute, frequency), user = user).content
+        return self.get('/api/bittrails/%s/%s/by/%s/as/timestamps'
+                % (datastream, aspect, frequency), user = user).content
         

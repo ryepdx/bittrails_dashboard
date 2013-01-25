@@ -2,6 +2,7 @@ from flask import render_template, Blueprint, url_for, redirect, request
 from flask.ext.login import current_user
 from auth import API, BLUEPRINT
 from charts.forms import ChartForm
+import json
 
 app = Blueprint('charts', __name__, template_folder='/templates')
 
@@ -26,10 +27,10 @@ def index():
         ], key = lambda k: k['x'])
     else:
         data = None
-
+    
     return render_template('%s/index.html' % app.name,
             datastreams = datastreams,
-            aspects = API.get_aspects(),
+            aspects = json.dumps(API.get_aspects()),
             frequencies = API.get_frequencies(),
             chart_types = API.get_chart_types(),
             data = data,
