@@ -19,6 +19,7 @@ div.new-chart input[type=submit] {
 #chart_container {
     padding: 0px;
     margin: 20px 0px;
+    cursor: pointer;
 }
 
 #chart_container * {

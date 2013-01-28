@@ -1,3 +1,4 @@
+from decimal import Decimal
 from flask import render_template, Blueprint, url_for, redirect, request
 from flask.ext.login import current_user
 from auth import API, BLUEPRINT
@@ -19,7 +20,7 @@ def index():
     
     if request.method == 'POST' and form.validate():
         data = sorted([
-            {'x': int(x), 'y': int(y)}
+            {'x': int(x), 'y': y}
             for x, y in API.get_chart_data(
                 current_user,form.datastream.data,
                 form.aspect.data, form.frequency.data

@@ -2,11 +2,6 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="/static/stylesheets/charts.css" />
-{% if data %}
-<link rel="stylesheet" href="/static/stylesheets/rickshaw.min.css" />
-<script type="text/javascript" src="/static/javascripts/d3.min.js"></script>
-<script type="text/javascript" src="/static/javascripts/d3.layout.min.js"></script>
-<script type="text/javascript" src="/static/javascripts/rickshaw.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function () {
     var aspects = {{ aspects|safe }};
@@ -16,9 +11,20 @@ $(document).ready(function () {
         $aspect_dd.empty();
         $.each(aspects[e.target.value]['aspects'], function (i, value) {
             $aspect_dd.append("<option value='" + value + "'>"
-                + value.replace('_', ' ') + "</option>");
+                + value.replace(/_/g, ' ') + "</option>");
         });
     });
+});
+</script>
+
+{% if data %}
+<link rel="stylesheet" href="/static/stylesheets/rickshaw.min.css" />
+<script type="text/javascript" src="/static/javascripts/d3.min.js"></script>
+<script type="text/javascript" src="/static/javascripts/d3.layout.min.js"></script>
+<script type="text/javascript" src="/static/javascripts/rickshaw.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    var aspects = {{ aspects|safe }};
     
     $('#chart').click(function (e) {
         $('#chart svg g.y_ticks, #chart svg g.y_grid, #chart div.x_tick, #chart div.title').toggle();
@@ -79,7 +85,7 @@ s<div class="six columns">
 {% if data %}
 <div div class="twelve columns">
     <h1>Your {{ form.datastream.data|replace('_', ' ')|title }} 
-        {{ form.aspect.data.name|replace('_', ' ') }} 
+        {{ form.aspect.data|replace('_', ' ') }} 
         by {{ form.frequency.data }}
     </h1>
 </div>
