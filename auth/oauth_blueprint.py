@@ -115,7 +115,7 @@ class OAuth(RauthOAuth1):
             return super(OAuth, self).request(method, uri, **kwargs)
             
     def get_aspects(self):
-        response =  self.get('/api/bittrails/datastreams', user = None).content
+        response = self.get('datastreams.json', user = None).content
         return response
         
     def get_frequencies(self):
@@ -125,6 +125,6 @@ class OAuth(RauthOAuth1):
         return ['line', 'bar', 'scatterplot', 'area']
 
     def get_chart_data(self, user, datastream, aspect, frequency):
-        return self.get('/api/bittrails/%s/%s/by/%s/as/timestamps'
+        return self.get('%s/%s/by/%s/as/timestamps'
                 % (datastream, aspect, frequency), user = user).content
         

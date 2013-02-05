@@ -6,7 +6,7 @@ from auth import signals
 
 API = OAuth(
             name = 'bittrails',
-            base_url = 'http://localhost:5000/api/',
+            base_url = 'http://api.localhost:5000/v1/',
             request_token_url = 'http://localhost:5000/request_token',
             access_token_url = 'http://localhost:5000/access_token',
             authorize_url = 'http://localhost:5000/authorize',
