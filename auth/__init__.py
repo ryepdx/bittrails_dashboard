@@ -1,10 +1,10 @@
 from blinker import Namespace
-from oauth_blueprint import OAuthBlueprint, OAuth
+from oauth_blueprint import OAuthBlueprint, BitTrailsOAuth
 from settings import (BITTRAILS_KEY, BITTRAILS_SECRET)
                       
 from auth import signals
 
-API = OAuth(
+API = BitTrailsOAuth(
             name = 'bittrails',
             base_url = 'http://api.localhost:5000/v1/',
             request_token_url = 'http://localhost:5000/request_token',

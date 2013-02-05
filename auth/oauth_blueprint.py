@@ -5,6 +5,7 @@ from flask import redirect, url_for, request, Blueprint, render_template, abort
 from blinker import Namespace
 from auth_settings import TOKENS_KEY, REALMS_KEY
 from auth import signals
+from oauthlib.common import add_params_to_uri
 from requests.auth import AuthBase
 
 def oauth_completed(sender, request, access_token):
@@ -114,6 +115,7 @@ class OAuth(RauthOAuth1):
         else:
             return super(OAuth, self).request(method, uri, **kwargs)
             
+class BitTrailsOAuth(OAuth):
     def get_aspects(self):
         response = self.get('datastreams.json', user = None).content
         return response
@@ -128,3 +130,11 @@ class OAuth(RauthOAuth1):
         return self.get('%s/%s/by/%s/as/timestamps'
                 % (datastream, aspect, frequency), user = user).content
         
+    def get_correlations(self, interval, start, aspects,
+    thresholds = ['> 0.5', '< -0.5']):
+        uri = add_params_to_uri('correlations/',
+            [('intervals', json.dumps([interval])),
+             ('start', start.isoformat()),
+             ('aspects', json.dumps(aspects)),
+             ('thresholds', json.dumps(thresholds))])
+        return self.get(uri).content

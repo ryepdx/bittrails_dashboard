@@ -7,7 +7,7 @@ import auth
 import login
 import home.views
 import charts.views
-import insights.views
+import buffs.views
 import twitter_demo.views
 
 def main():
@@ -19,7 +19,7 @@ def main():
     auth.register_auth_blueprint(app)
     app.register_blueprint(home.views.app)
     app.register_blueprint(charts.views.app, url_prefix='/charts')
-    app.register_blueprint(insights.views.app, url_prefix='/insights')
+    app.register_blueprint(buffs.views.app, url_prefix='/buffs')
     
     # Set up login and registration.
     login_manager = LoginManager()

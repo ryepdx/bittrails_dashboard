@@ -28,7 +28,7 @@ def index():
         ], key = lambda k: k['x'])
     else:
         data = None
-    
+        
     return render_template('%s/index.html' % app.name,
             datastreams = datastreams,
             aspects = json.dumps(API.get_aspects()),
