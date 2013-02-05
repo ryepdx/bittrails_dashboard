@@ -130,11 +130,12 @@ class BitTrailsOAuth(OAuth):
         return self.get('%s/%s/by/%s/as/timestamps'
                 % (datastream, aspect, frequency), user = user).content
         
-    def get_correlations(self, interval, start, aspects,
+    def get_correlations(self, user, intervals, start, aspects,
     thresholds = ['> 0.5', '< -0.5']):
-        uri = add_params_to_uri('correlations/',
-            [('intervals', json.dumps([interval])),
-             ('start', start.isoformat()),
-             ('aspects', json.dumps(aspects)),
-             ('thresholds', json.dumps(thresholds))])
-        return self.get(uri).content
+        params = [('intervals', json.dumps(intervals)),
+             ('min_date', start.isoformat()),
+             ('thresholds', json.dumps(thresholds)),
+             ('aspects', json.dumps(aspects))]
+             
+        return self.get(
+            add_params_to_uri('correlations.json', params), user = user).content

@@ -21,8 +21,8 @@
           <a href="{{ url_for('home.home') }}">Account</a> </li>
           {% if request.path == url_for('charts.index') %} <li class="active"> {% else %} <li> {% endif %}
           <a href="{{ url_for('charts.index') }}">Charts</a> </li>
-              {% if request.path == url_for('insights.index') %} <li class="active"> {% else %} <li> {% endif %}
-          <a href="{{ url_for('insights.index') }}">Buffs</a></li>
+              {% if request.path == url_for('buffs.index') %} <li class="active"> {% else %} <li> {% endif %}
+          <a href="{{ url_for('buffs.index') }}">Buffs</a></li>
           {% endif %}
           
         </ul>
