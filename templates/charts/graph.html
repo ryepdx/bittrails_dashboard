@@ -1,0 +1,56 @@
+{% macro import() -%}
+<link rel="stylesheet" href="/static/stylesheets/rickshaw.min.css" />
+<script type="text/javascript" src="/static/javascripts/d3.min.js"></script>
+<script type="text/javascript" src="/static/javascripts/d3.layout.min.js"></script>
+<script type="text/javascript" src="/static/javascripts/rickshaw.min.js"></script>
+{%- endmacro %}
+
+{% macro create(id, series, renderer) -%}
+    $('{{id}}').click(function (e) {
+        $('{{id}} svg g.y_ticks, {{id}} svg g.y_grid, {{id}} div.x_tick, {{id}} div.title').toggle();
+    })
+    
+    var time = new Rickshaw.Fixtures.Time();
+    
+    graph = new Rickshaw.Graph({
+        element: document.querySelector('{{id}}'),
+        height: 280,
+        renderer: '{{ renderer }}',
+        series: {{ series|tojson|safe }}
+    });
+    var x_axis = new Rickshaw.Graph.Axis.Time(
+        { graph: graph});//, timeUnit: unit });
+    var y_axis = new Rickshaw.Graph.Axis.Y({ graph: graph });
+    var hoverDetail = new Rickshaw.Graph.HoverDetail( { graph: graph } );
+    hoverDetail.onShow = function () {
+            if (this.left != hoverDetail.element.style.left) {
+                this.left = hoverDetail.element.style.left;
+                
+                this.left_px = parseInt(
+                    this.left.substring(0, this.left.length-2));
+            }
+            
+            $x_label = $('div.x_label', hoverDetail.element);
+            
+            if (this.left_px + $x_label.outerWidth() > $('body').width()) {    
+                $item = $('div.item', hoverDetail.element);
+                $x_label.css('margin-left', "-"+ $x_label.outerWidth()+"px")
+                $item.css('margin-left', "-"+
+                    ($item.outerWidth()
+                    +$('div.dot', hoverDetail.element).outerWidth())+"px")
+                $item.addClass('overflow');
+                    
+            }
+        };
+    graph.render();
+{%- endmacro %}
+
+{% macro create_mini(id, series, renderer) -%}
+    graph = new Rickshaw.Graph({
+        element: document.querySelector('{{id}}'),
+        height: 280,
+        renderer: '{{ renderer }}',
+        series: {{ series|tojson|safe }}
+    });
+    graph.render();
+{%- endmacro %}

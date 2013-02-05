@@ -1,6 +1,20 @@
 {% extends "base.html" %}
+{% import "charts/graph.html" as graph %}
+
+{% block extra_head %}
+{{ graph.import() }}
+<script type="text/javascript">
+$(document).ready(function () {
+    {{ graph.create_mini('#chart', series, 'line') }}
+});
+</script>
+{% endblock %}
 
 {% block content %}
+<div id="chart_container" class="twelve columns four-mobile row">
+    <div id="chart"></div>
+</div>
+
 <div class="six columns">
     <h1>Your Buffs</h1>
     <em>None</em>
@@ -8,7 +22,10 @@
 
 <div class="six columns">
     <h1>Suggested Buffs</h1>
-    {{ correlations }}
+    {% for text in buff_text %}
+        <p>{{ text }}</p>
+    {% endfor %}
+    {{ datastreams }}
     <em>None.</em>
     </div>
 </div>

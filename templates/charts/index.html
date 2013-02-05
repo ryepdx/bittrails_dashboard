@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "charts/graph.html" as graph %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/static/stylesheets/charts.css" />
@@ -17,58 +18,14 @@ $(document).ready(function () {
 });
 </script>
 
-{% if data %}
-<link rel="stylesheet" href="/static/stylesheets/rickshaw.min.css" />
-<script type="text/javascript" src="/static/javascripts/d3.min.js"></script>
-<script type="text/javascript" src="/static/javascripts/d3.layout.min.js"></script>
-<script type="text/javascript" src="/static/javascripts/rickshaw.min.js"></script>
+{% if series %}
+{{ graph.import() }}
+
 <script type="text/javascript">
 $(document).ready(function () {
     var aspects = {{ aspects|safe }};
     
-    $('#chart').click(function (e) {
-        $('#chart svg g.y_ticks, #chart svg g.y_grid, #chart div.x_tick, #chart div.title').toggle();
-    })
-    
-    var time = new Rickshaw.Fixtures.Time();
-    //var unit = time.unit('{{ form.frequency.data }}');
-    var time = new Rickshaw.Fixtures.Time();
-    var data = {{ data|tojson|safe }};
-    graph = new Rickshaw.Graph({
-        element: document.querySelector('#chart'),
-        height: 280,
-        renderer: '{{ form.chart_type.data }}',
-        series: [{
-            name: '{{ form.aspect.data|replace('_', ' ') }}',
-            color: 'steelblue',
-            data: data
-        }]
-    });
-    var x_axis = new Rickshaw.Graph.Axis.Time(
-        { graph: graph});//, timeUnit: unit });
-    var y_axis = new Rickshaw.Graph.Axis.Y({ graph: graph });
-    var hoverDetail = new Rickshaw.Graph.HoverDetail( { graph: graph } );
-    hoverDetail.onShow = function () {
-            if (this.left != hoverDetail.element.style.left) {
-                this.left = hoverDetail.element.style.left;
-                
-                this.left_px = parseInt(
-                    this.left.substring(0, this.left.length-2));
-            }
-            
-            $x_label = $('div.x_label', hoverDetail.element);
-            
-            if (this.left_px + $x_label.outerWidth() > $('body').width()) {    
-                $item = $('div.item', hoverDetail.element);
-                $x_label.css('margin-left', "-"+ $x_label.outerWidth()+"px")
-                $item.css('margin-left', "-"+
-                    ($item.outerWidth()
-                    +$('div.dot', hoverDetail.element).outerWidth())+"px")
-                $item.addClass('overflow');
-                    
-            }
-        };
-    graph.render();
+    {{ graph.create('#chart', series, form.chart_type.data) }}
 });
 </script>
 {% endif %}
@@ -82,7 +39,7 @@ s<div class="six columns">
 </div>
 #}
 
-{% if data %}
+{% if series %}
 <div div class="twelve columns">
     <h1>Your {{ form.datastream.data|replace('_', ' ')|title }} 
         {{ form.aspect.data|replace('_', ' ') }} 

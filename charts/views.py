@@ -4,6 +4,7 @@ from flask.ext.login import current_user
 from auth import API, BLUEPRINT
 from charts.forms import ChartForm
 import json
+import utils
 
 app = Blueprint('charts', __name__, template_folder='/templates')
 
@@ -19,21 +20,22 @@ def index():
     form = ChartForm(current_user, request.form)
     
     if request.method == 'POST' and form.validate():
-        data = sorted([
-            {'x': int(x), 'y': y}
-            for x, y in API.get_chart_data(
+        series = [{
+        'name': form.aspect.data.replace('_', ' '),
+        'color': 'steelblue',
+        'data': utils.format_chart_data(API.get_chart_data(
                 current_user,form.datastream.data,
                 form.aspect.data, form.frequency.data
-            ).items()
-        ], key = lambda k: k['x'])
+            ))
+        }]
     else:
-        data = None
+        series = None
         
     return render_template('%s/index.html' % app.name,
             datastreams = datastreams,
             aspects = json.dumps(API.get_aspects()),
             frequencies = API.get_frequencies(),
             chart_types = API.get_chart_types(),
-            data = data,
-            form = form
+            form = form,
+            series = series
     )

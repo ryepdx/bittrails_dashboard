@@ -126,9 +126,9 @@ class BitTrailsOAuth(OAuth):
     def get_chart_types(self):
         return ['line', 'bar', 'scatterplot', 'area']
 
-    def get_chart_data(self, user, datastream, aspect, frequency):
+    def get_chart_data(self, user, datastream, aspect, interval):
         return self.get('%s/%s/by/%s/as/timestamps'
-                % (datastream, aspect, frequency), user = user).content
+                % (datastream, aspect, interval), user = user).content
         
     def get_correlations(self, user, intervals, start, aspects,
     thresholds = ['> 0.5', '< -0.5']):
