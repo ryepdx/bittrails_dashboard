@@ -126,9 +126,18 @@ class BitTrailsOAuth(OAuth):
     def get_chart_types(self):
         return ['line', 'bar', 'scatterplot', 'area']
 
-    def get_chart_data(self, user, datastream, aspect, interval):
-        return self.get('%s/%s/by/%s/as/timestamps'
-                % (datastream, aspect, interval), user = user).content
+    def get_chart_data(self, user, datastream, aspect, interval,
+    start = None, end = None):
+        params = [('interval', interval), ('timeformat', 'timestamps')]
+        
+        if start:
+            params.append(('start', start))
+            
+        if end:
+            params.append(('end', end))
+            
+        return self.get(add_params_to_uri(
+            '%s/%s.json' % (datastream, aspect), params), user = user).content
         
     def get_correlations(self, user, intervals, start, aspects,
     thresholds = ['> 0.5', '< -0.5']):
