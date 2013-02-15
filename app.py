@@ -9,6 +9,7 @@ import home.views
 import charts.views
 import buffs.views
 import twitter_demo.views
+import terminal.views
 
 def main():
     app = Flask('bittrails')
@@ -30,6 +31,8 @@ def main():
         @app.route('/url_map')
         def url_map():
             return str(app.url_map)
+            
+        app.register_blueprint(terminal.views.app, url_prefix='/terminal')
         
     # Run the app!
     app.run(host = '0.0.0.0', port = PORT, debug = DEBUG)

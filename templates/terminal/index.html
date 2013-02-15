@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+{% if result %}
+<p><tt>Status: {{ status }}</tt></p>
+<p><tt>{{ result }}</tt></p>
+{% endif %}
+<form action='.' method='post'>
+<input type="text" name="cmd" value="{{cmd}}" />
+</form>
+{% endblock %}

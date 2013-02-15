@@ -8,8 +8,12 @@ class Model(dict):
         return conn[cls.table]
         
     @classmethod
-    def find_one(cls, attrs, as_obj = False):
-        result = cls.get_collection().find_one(attrs)
+    def find(cls, *args, **kwargs):
+        return cls.get_collection().find(*args, **kwargs)
+        
+    @classmethod
+    def find_one(cls, attrs, as_obj = False, **kwargs):
+        result = cls.get_collection().find_one(attrs, **kwargs)
         
         if result and as_obj:
             return cls(**result)

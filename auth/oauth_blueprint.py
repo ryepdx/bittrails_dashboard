@@ -21,11 +21,6 @@ def oauth_completed(sender, request, access_token):
     
 signals.oauth_completed.connect(oauth_completed)
 
-'''
-TODO: Split the below class into two classes? Right now it mixes the OAuth API
-concept and the Blueprint concept.
-'''
-
 class RealmAuth(AuthBase):
     def __init__(self, realm):
         self.realm = realm

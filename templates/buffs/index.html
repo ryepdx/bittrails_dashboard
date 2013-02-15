@@ -2,31 +2,43 @@
 {% import "charts/graph.html" as graph %}
 
 {% block extra_head %}
+<link rel='stylesheet' href='/static/stylesheets/buffs.css' />
 {{ graph.import() }}
 <script type="text/javascript">
 $(document).ready(function () {
-    {{ graph.create_mini('#chart', series, 'line') }}
+    {% for buff in buffs %}
+        {{ graph.create_mini(
+            '#' + buff.chart_id, buff.chart_data, 'line') }}
+    {% endfor %}
 });
 </script>
 {% endblock %}
 
 {% block content %}
-<div id="chart_container" class="twelve columns four-mobile row">
-    <div id="chart"></div>
-</div>
 
-<div class="six columns">
-    <h1>Your Buffs</h1>
-    <em>None</em>
-</div>
-
-<div class="six columns">
-    <h1>Suggested Buffs</h1>
-    {% for text in buff_text %}
-        <p>{{ text }}</p>
-    {% endfor %}
-    {{ datastreams }}
-    <em>None.</em>
+<h1>Suggested Buffs</h1>
+{% if buffs %}
+<div class="ten centered columns three-mobile row">
+    {% for buff in buffs %}
+    <div class="twelve columns three-mobile buff">
+        <div class="three columns two-mobile">
+            <div id="{{ buff.chart_id }}" class="mini-chart"></div>
+        </div>
+        <div class="nine columns two-mobile">
+            <p>{{ buff.text }}</p>
+        
+        <div class="twelve columns buff-buttons">
+            <p>
+                <a class="radius success button" href="/buffs/{{ buff.buff_id }}?_method=put&state=accepted">Accept</a>
+                <a class="radius alert button" href="/buffs/{{ buff.buff_id }}?_method=put&state=declined">That doesn't sound right...</a>
+            </p>
+        </div>
+        </div>
     </div>
+    {% endfor %}
 </div>
+{% else %}
+    <em>None.</em>
+{% endif %}
+
 {% endblock%}

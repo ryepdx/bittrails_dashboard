@@ -48,7 +48,7 @@
 {% macro create_mini(id, series, renderer) -%}
     graph = new Rickshaw.Graph({
         element: document.querySelector('{{id}}'),
-        height: 280,
+        height: 100,
         renderer: '{{ renderer }}',
         series: {{ series|tojson|safe }}
     });

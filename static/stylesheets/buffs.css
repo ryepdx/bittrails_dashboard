@@ -1,0 +1,24 @@
+.buff {
+    padding: 5px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-top: thin dotted #CCC;
+}
+
+.buff:first-child {
+    margin-top: 1em;
+}
+
+.buff:last-child {
+    border-bottom: thin dotted #CCC;
+    
+}
+
+.buff-buttons {
+    text-align:right;
+}
+
+.mini-chart {
+    background-color: #FFF;
+    border-radius: 10px;
+}
