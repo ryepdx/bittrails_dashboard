@@ -26,7 +26,7 @@ def index():
         'data': utils.format_chart_data(API.get_chart_data(
                 current_user,form.datastream.data,
                 form.aspect.data, form.frequency.data
-            ))
+            ), form.aspect.data)
         }]
     else:
         series = None
