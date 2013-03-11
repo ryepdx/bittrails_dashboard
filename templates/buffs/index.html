@@ -1,44 +1,83 @@
 {% extends "base.html" %}
 {% import "charts/graph.html" as graph %}
+{% import "buffs/macros.html" as macros %}
 
 {% block extra_head %}
 <link rel='stylesheet' href='/static/stylesheets/buffs.css' />
+
 {{ graph.import() }}
+<script type="text/javascript" src="/static/javascripts/d3-timeline.js"></script>
+<script type="text/javascript" src="/static/javascripts/jquery.dragToScroll.js"></script>
 <script type="text/javascript">
 $(document).ready(function () {
-    {% for buff in buffs %}
+    {% for buff in outstanding_buffs %}
         {{ graph.create_mini(
             '#' + buff.chart_id, buff.chart_data, 'line') }}
     {% endfor %}
+    
+    var accepted_buffs = {{ accepted_buffs|safe }};
+    var fullDateFormat = d3.time.format("%b %d, %Y");
+    var partialDateFormat = d3.time.format("%b %d");
+    
+    var svg = d3.select("#buffs_timeline")
+        .append("svg")
+        .datum(accepted_buffs);
+    
+    var year_text = svg.append("text")
+        .attr("style", "font-size:24px")
+        .attr("transform", "translate("+ 0 +","+ 40 +")")
+        .text("{{ start_year }}");
+        
+    var chart = d3.timeline()
+      .stack()
+      .width({{ timeline_width }})
+      .itemHeight({{ bar_height }})
+      .hover(function (d, i, datum) { 
+          // d is the current time object. i is the index during d3 rendering
+          // datum is the id object
+     //     console.log(d);
+    //      console.log(i);
+   //       console.log(datum);
+          })
+      .tickFormat({
+          format: function(d, i){
+              d = new Date(d);
+              
+              // Show year only on first tick and January 1st.
+              if (i == 0 || (d.getMonth() == 0 && d.getDate() < 7)) {
+                  return fullDateFormat(d, i);
+              } else {
+                  return partialDateFormat(d, i);
+              }
+          }, 
+          tickTime: d3.time.weeks,
+          tickNumber: 1, 
+          tickSize: 3 })
+      .rotateTicks(90)
+      .scroll(function (x, scale) {
+          year_text.text(scale.invert(x).getFullYear());
+      })
+      .margin({{ margin|safe }});
+        
+    svg.call(chart).attr("height", chart.height());
 });
 </script>
 {% endblock %}
 
 {% block content %}
-
-<h1>Suggested Buffs</h1>
-{% if buffs %}
-<div class="ten centered columns three-mobile row">
-    {% for buff in buffs %}
-    <div class="twelve columns three-mobile buff">
-        <div class="three columns two-mobile">
-            <div id="{{ buff.chart_id }}" class="mini-chart"></div>
-        </div>
-        <div class="nine columns two-mobile">
-            <p>{{ buff.text }}</p>
-        
-        <div class="twelve columns buff-buttons">
-            <p>
-                <a class="radius success button" href="/buffs/{{ buff.buff_id }}?_method=put&state=accepted">Accept</a>
-                <a class="radius alert button" href="/buffs/{{ buff.buff_id }}?_method=put&state=declined">That doesn't sound right...</a>
-            </p>
-        </div>
-        </div>
-    </div>
-    {% endfor %}
+<div class="eight columns">
+    <h1>History</h1>
+    <div id="buffs_timeline"></div>
 </div>
-{% else %}
-    <em>None.</em>
-{% endif %}
+<div class="four columns">
+    <h1>Active</h1>
+</div>
 
+<div class="twelve columns">
+    <h1>Suggested</h1>
+</div>
+
+{% if outstanding_buffs %}
+    {{ macros.show_buffs_list("Suggested Buffs", outstanding_buffs, OUTSTANDING) }}
+{% endif %}
 {% endblock%}

@@ -1,11 +1,14 @@
-from wtforms import Form, SelectField, validators
+from wtforms import Form, SelectField, TextField, validators
 from auth import API
+
+class AdHocChartForm(Form):
+    request_url = TextField(u'Request URL')
 
 class ChartForm(Form):
     datastream = SelectField(u'Datastream')
     aspect = SelectField(u'Aspect')
     frequency = SelectField(u'Frequency', choices = list(
-        (key, key) for key in API.get_frequencies()))
+        (key, key) for key in API.get_intervals()))
     chart_type = SelectField(u'Chart Type', choices = list(
         (key, key) for key in API.get_chart_types()))
     

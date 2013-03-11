@@ -112,34 +112,46 @@ class OAuth(RauthOAuth1):
             
 class BitTrailsOAuth(OAuth):
     def get_aspects(self):
-        response = self.get('datastreams.json', user = None).content
+        response = self.get('children.json', user = None).content
         return response
         
-    def get_frequencies(self):
+    def get_intervals(self):
         return ['day', 'week', 'month', 'year']
+        
+    def get_dimensions(self):
+        response = self.get('dimensions.json', user = None).content
 
     def get_chart_types(self):
         return ['line', 'bar', 'scatterplot', 'area']
+        
+    def get_url_map(self):
+        return [
+            ('twitter', ('tweets', ('total.json',))),
+            ('lastfm', ('scrobbles', ('total.json',), ('energy', ('total.json',))))]
 
-    def get_chart_data(self, user, datastream, aspect, interval,
-    start = None, end = None):
-        params = [('interval', interval), ('timeformat', 'timestamps')]
+    def get_chart_data(self, user, path, group_by, start = None, end = None):
+        params = [
+            ('groupBy', json.dumps(group_by)),
+            ('timeformat', 'timestamps')
+        ]
         
         if start:
-            params.append(('start', start))
+            params.append(('minDate', start))
             
         if end:
-            params.append(('end', end))
-            
-        return self.get(add_params_to_uri(
-            '%s/%s.json' % (datastream, aspect), params), user = user).content
+            params.append(('maxDate', end))
         
-    def get_correlations(self, user, intervals, start, aspects,
-    thresholds = ['> 0.5', '< -0.5']):
-        params = [('intervals', json.dumps(intervals)),
-             ('min_date', start.isoformat()),
+        return self.get(add_params_to_uri(
+            '%s.json' % path, params), user = user).content
+        
+    def get_correlations(self, user, paths, group_by, start,
+    thresholds = ['> 0.5', '< -0.5'], continuous = False):
+        params = [
+             ('paths', json.dumps(paths)),
+             ('minDate', start.isoformat()),
              ('thresholds', json.dumps(thresholds)),
-             ('aspects', json.dumps(aspects))]
-             
-        return self.get(
-            add_params_to_uri('correlations.json', params), user = user).content
+             ('groupBy', json.dumps(group_by)),
+             ('continuous', json.dumps(continuous))]
+        
+        return json.loads(self.get(add_params_to_uri(
+            'correlations.json', params), user = user).content)

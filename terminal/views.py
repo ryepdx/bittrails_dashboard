@@ -9,9 +9,10 @@ def home():
     if request.method == "POST":
         response = API.get(request.form.get('cmd'), user = current_user)
         status = response.status
-        result = json.dumps(response.content)
+        result = response.content
     else:
         result = None
+        status = None
         
     return render_template('%s/index.html' % app.name,
-        cmd = request.form.get('cmd'), status = status, result = result)
+        cmd = request.form.get('cmd', ''), status = status, result = result)

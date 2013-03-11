@@ -1,0 +1,28 @@
+{% macro show_buffs_list(title, buffs, OUTSTANDING) -%}
+<h1>{{ title }}</h1>
+{% if buffs %}
+<div class="ten centered columns three-mobile row">
+    {% for buff in buffs %}
+    <div class="twelve columns three-mobile buff">
+        <div class="three columns two-mobile">
+            <div id="{{ buff.chart_id }}" class="mini-chart"></div>
+        </div>
+        <div class="nine columns two-mobile">
+            <p>{{ buff.text }}</p>
+        
+        {% if buff.state == OUTSTANDING %}
+        <div class="twelve columns buff-buttons">
+            <p>
+                <a class="radius success button" href="/buffs/{{ buff.buff_id }}?_method=put&state=accepted">Accept</a>
+                <a class="radius alert button" href="/buffs/{{ buff.buff_id }}?_method=put&state=declined">That doesn't sound right...</a>
+            </p>
+        </div>
+        {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+    <em>None.</em>
+{% endif %}
+{%- endmacro %}

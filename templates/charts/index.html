@@ -68,11 +68,15 @@ s<div class="six columns">
                 </ul>
             {% endif %}
         {% endfor %}
-    <form action='' method='post'>
+        <form action='' method='post'>
+            {{form.request_url.label}}: {{form.request_url}}
+            <input class="button" type="submit" value="Create" />
+        </form>
+    {#<form action='' method='post'>
         Show me my {{ form.datastream }} {{ form.aspect }} by
         {{ form.frequency }} as a {{ form.chart_type }} graph.
         <input class="button" type="submit" value="Create" />
-    </form>
+    </form>#}
 </div>
 </div>
 {% endblock%}

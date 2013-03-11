@@ -22,3 +22,8 @@
     background-color: #FFF;
     border-radius: 10px;
 }
+
+div.eight.columns {
+    border-right: thin solid gray;
+    padding-right: 0px;
+}
