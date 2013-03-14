@@ -5,10 +5,6 @@
     border-top: thin dotted #CCC;
 }
 
-.buff:first-child {
-    margin-top: 1em;
-}
-
 .buff:last-child {
     border-bottom: thin dotted #CCC;
     
@@ -23,7 +19,24 @@
     border-radius: 10px;
 }
 
-div.eight.columns {
+.eight.columns {
     border-right: thin solid gray;
     padding-right: 0px;
+}
+
+.columns {
+    margin-bottom: 2em;
+}
+
+#buff_info {
+    z-index: 2;
+    border-top: thin solid gray;
+    display: none;
+    margin: 0px;
+    overflow: display;
+    position: absolute;
+    background: #F2F2F2;
+    bottom: 0px;
+    padding-top: 0.5em;
+    line-height: 1.5;
 }

@@ -15,6 +15,7 @@ $(document).ready(function () {
             '#' + buff.chart_id, buff.chart_data, 'line') }}
     {% endfor %}
     
+    {% if accepted_buffs %}
     var accepted_buffs = {{ accepted_buffs|safe }};
     var fullDateFormat = d3.time.format("%b %d, %Y");
     var partialDateFormat = d3.time.format("%b %d");
@@ -32,13 +33,17 @@ $(document).ready(function () {
       .stack()
       .width({{ timeline_width }})
       .itemHeight({{ bar_height }})
-      .hover(function (d, i, datum) { 
-          // d is the current time object. i is the index during d3 rendering
-          // datum is the id object
-     //     console.log(d);
-    //      console.log(i);
-   //       console.log(datum);
-          })
+      .click(function (d, i, datum) {
+          graph = new Rickshaw.Graph({
+            element: document.getElementById('buff_info_chart'),
+            height: 100,
+            renderer: 'line',
+            series: d.chart_data
+          });
+          graph.render();
+          
+          $("#buff_info").slideDown(100, function () { $("#buff_info").attr("style", "overflow:display;display:block") })
+        })
       .tickFormat({
           format: function(d, i){
               d = new Date(d);
@@ -60,24 +65,47 @@ $(document).ready(function () {
       .margin({{ margin|safe }});
         
     svg.call(chart).attr("height", chart.height());
+    
+    $("svg rect").click(function (e) {
+        console.log(e.pageX+", "+e.pageY);
+    });
+    {% endif %}
 });
 </script>
 {% endblock %}
 
 {% block content %}
-<div class="eight columns">
-    <h1>History</h1>
-    <div id="buffs_timeline"></div>
-</div>
-<div class="four columns">
-    <h1>Active</h1>
-</div>
 
-<div class="twelve columns">
-    <h1>Suggested</h1>
-</div>
 
 {% if outstanding_buffs %}
-    {{ macros.show_buffs_list("Suggested Buffs", outstanding_buffs, OUTSTANDING) }}
+<div id="suggested_buffs" class="twelve columns success">
+    {{ macros.show_buffs_list("Suggested", outstanding_buffs, OUTSTANDING) }}
+</div>
 {% endif %}
+
+
+<div class="eight columns">
+    <div><h1>History</h1></div>
+    <div id="buffs_timeline"></div>
+</div>
+
+<div class="four columns">
+    <h1>Active</h1>
+    <p>You don't have any active buffs.</p>
+</div>
 {% endblock%}
+
+{% block footer %}
+<div id="buff_info" class="twelve columns">
+    <div class="six columns">
+        <h3>Chart</h3>
+        <div id="buff_info_chart" class="chart"></div>
+    </div>
+    <div class="five columns">
+        <h3>Description</h3>
+    </div>
+    <div class="right">
+        <img src="/static/images/circle_remove.png" onclick="$('#buff_info').slideUp(100)"/>
+    </div>
+</div>
+{% endblock %}
