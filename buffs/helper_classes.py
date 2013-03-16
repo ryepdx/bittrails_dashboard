@@ -29,5 +29,9 @@ class CorrelationBuffCharts(object):
                 'chart_data': chart_data,
                 'chart_id': self.chart_prefix + str(self.current_id),
                 'buff_id': correlation['_id'],
-                'state': correlation['state']
+                'state': correlation['state'],
+                'start': correlation['start'],
+                'end': correlation['end'],
+                'correlation': correlation['correlation'],
+                'paths': correlation['paths']
             }

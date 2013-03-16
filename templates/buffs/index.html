@@ -34,6 +34,9 @@ $(document).ready(function () {
       .width({{ timeline_width }})
       .itemHeight({{ bar_height }})
       .click(function (d, i, datum) {
+          document.getElementById('buff_info_chart').innerHTML = "";
+          document.getElementById('buff_info_description').innerHTML = d.text;
+          
           graph = new Rickshaw.Graph({
             element: document.getElementById('buff_info_chart'),
             height: 100,
@@ -103,6 +106,7 @@ $(document).ready(function () {
     </div>
     <div class="five columns">
         <h3>Description</h3>
+        <div id="buff_info_description"></div>
     </div>
     <div class="right">
         <img src="/static/images/circle_remove.png" onclick="$('#buff_info').slideUp(100)"/>

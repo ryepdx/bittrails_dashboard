@@ -70,7 +70,8 @@ def index():
     max_end = None
     min_start = None
     
-    for buff in CorrelationBuff.find_accepted(lazy = False):
+    for buff in list(CorrelationBuffCharts(current_user,
+    CorrelationBuff.find_accepted(lazy = False), chart_prefix = "new_chart")):
         start_timestamp = int(time.mktime(
             datetime.datetime(*buff['start']).timetuple()))
         end_timestamp = int(time.mktime(
@@ -91,7 +92,10 @@ def index():
         accepted_buffs[buff_key]["times"].append({
             "starting_time": start_timestamp * 1000,
             "ending_time": end_timestamp * 1000,
-            "correlation": "%s%%" % int(round(buff["correlation"]*100))
+            "correlation": "%s%%" % int(round(buff["correlation"]*100)),
+            "chart_data": buff["chart_data"],
+            "chart_id": buff["chart_id"],
+            "text": buff['text']
         })
         
         bar_height = 40
