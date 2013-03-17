@@ -1,10 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
+<h1>API Terminal</h1>
 {% if result %}
-<p><tt>Status: {{ status }}</tt></p>
-<p><tt>{{ result }}</tt></p>
+<div class="row collapse">
+    <div class="panel">
+        <p><tt>Status: {{ status }}</tt></p>
+        <p><tt>{{ result }}</tt></p>
+    </div>
+</div>
 {% endif %}
-<form action='.' method='post'>
-<input type="text" name="cmd" value="{{cmd}}" />
+<form action='.' method='get'>
+    <div class="row collapse">
+        <div class="three small-3 large-2 columns">
+            <span class="prefix">GET {{ base_url }}</span>
+        </div>
+        <div class="nine small-9 large-10 columns">
+            <input type="text" id="cmd" name="cmd" value="{{cmd}}" />
+        </div>
+    </div>
 </form>
 {% endblock %}

@@ -15,4 +15,6 @@ def home():
         status = None
         
     return render_template('%s/index.html' % app.name,
-        cmd = request.form.get('cmd', ''), status = status, result = result)
+        base_url = API.base_url, cmd = request.form.get('cmd', ''),
+        result = json.dumps(result) if status == 200 else result,
+        status = status)
