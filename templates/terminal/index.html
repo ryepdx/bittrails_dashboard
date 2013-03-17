@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>API Terminal</h1>
-{% if result %}
+{% if status %}
 <div class="row collapse">
     <div class="panel">
         <p><tt>Status: {{ status }}</tt></p>
-        <p><tt>{{ result }}</tt></p>
+        {% if result %}
+            <p><tt>{{ result }}</tt></p>
+        {% endif %}
     </div>
 </div>
 {% endif %}
