@@ -21,10 +21,11 @@ class CorrelationBuffCharts(object):
             correlation = self.correlations[self.current_id]
             template = buffs.utils.get_template_for(correlation)
             chart_data = charts.utils.json_for_correlation(
-                self.user, correlation, color = self.colors.next())
+                self.user, correlation, colors = self.colors)
             self.current_id += 1
             
             return {
+                'title': template.title,
                 'text': template.render_using(correlation),
                 'chart_data': chart_data,
                 'chart_id': self.chart_prefix + str(self.current_id),
@@ -33,5 +34,6 @@ class CorrelationBuffCharts(object):
                 'start': correlation['start'],
                 'end': correlation['end'],
                 'correlation': correlation['correlation'],
-                'paths': correlation['paths']
+                'paths': correlation['paths'],
+                'icon': template.icon
             }

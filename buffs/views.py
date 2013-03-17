@@ -70,8 +70,8 @@ def index():
     max_end = None
     min_start = None
     
-    for buff in list(CorrelationBuffCharts(current_user,
-    CorrelationBuff.find_accepted(lazy = False), chart_prefix = "new_chart")):
+    for buff in CorrelationBuffCharts(current_user,
+    CorrelationBuff.find_accepted(lazy = False), chart_prefix = "new_chart"):
         start_timestamp = int(time.mktime(
             datetime.datetime(*buff['start']).timetuple()))
         end_timestamp = int(time.mktime(
@@ -86,7 +86,9 @@ def index():
             min_start = start_timestamp
         
         if buff_key not in accepted_buffs:
-            accepted_buffs[buff_key] = {"icon": "/static/images/wat.png", "times": []}
+            accepted_buffs[buff_key] = {
+                "icon": "/static/images/buffs/%s" % buff['icon'],
+                "times": []}
             
         # Multiplying the times by 1000 because Javascript expects milliseconds.
         accepted_buffs[buff_key]["times"].append({
@@ -95,12 +97,13 @@ def index():
             "correlation": "%s%%" % int(round(buff["correlation"]*100)),
             "chart_data": buff["chart_data"],
             "chart_id": buff["chart_id"],
-            "text": buff['text']
+            "text": buff['text'],
+            "title": buff['title']
         })
         
         bar_height = 40
-        margin = {"left": 20, "right": 30, "top": 30, "bottom": 30}
-    #import pdb; pdb.set_trace()
+        margin = {"left": 40, "right": 30, "top": 30, "bottom": 30}
+    
     return render_template('%s/index.html' % app.name,
         outstanding_buffs = outstanding_buffs, 
         accepted_buffs = json.dumps(accepted_buffs.values()),

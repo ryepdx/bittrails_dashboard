@@ -32,14 +32,16 @@ $(document).ready(function () {
     var chart = d3.timeline()
       .stack()
       .width({{ timeline_width }})
+      .margin({{ margin|safe }})
       .itemHeight({{ bar_height }})
       .click(function (d, i, datum) {
           document.getElementById('buff_info_chart').innerHTML = "";
+          document.getElementById('buff_info_title').innerHTML = d.title;
           document.getElementById('buff_info_description').innerHTML = d.text;
           
           graph = new Rickshaw.Graph({
             element: document.getElementById('buff_info_chart'),
-            height: 100,
+            height: 200,
             renderer: 'line',
             series: d.chart_data
           });
@@ -64,8 +66,7 @@ $(document).ready(function () {
       .rotateTicks(90)
       .scroll(function (x, scale) {
           year_text.text(scale.invert(x).getFullYear());
-      })
-      .margin({{ margin|safe }});
+      });
         
     svg.call(chart).attr("height", chart.height());
     
@@ -101,11 +102,11 @@ $(document).ready(function () {
 {% block footer %}
 <div id="buff_info" class="twelve columns">
     <div class="six columns">
-        <h3>Chart</h3>
+
         <div id="buff_info_chart" class="chart"></div>
     </div>
     <div class="five columns">
-        <h3>Description</h3>
+        <h3 id="buff_info_title"></h3>
         <div id="buff_info_description"></div>
     </div>
     <div class="right">

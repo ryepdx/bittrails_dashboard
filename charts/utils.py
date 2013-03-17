@@ -16,10 +16,10 @@ def iso_to_gregorian(iso_year, iso_week, iso_day):
 
 
 
-def json_for_correlation(user, correlation, color = 'steelblue'):
+def json_for_correlation(user, correlation, colors):
     return normalize_chart_series([{
         'name': path.replace('/', ' ').title(),
-        'color': color,
+        'color': colors.next(),
         'data': format_chart_data(API.get_chart_data(
                     user, path, correlation['group_by'],
                     start = "%s-%s-%s" % tuple(correlation['start']),

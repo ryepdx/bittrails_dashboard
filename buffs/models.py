@@ -1,18 +1,25 @@
+from datetime import datetime
 from db.models import Model
 
 class BuffTemplate(Model):
     table = "buff_template"
     
-    def __init__(self, text, key = 'default', **kwargs):
+    def __init__(self, text, key = 'default', title="Unkown Buff",
+    icon="default.png", **kwargs):
+        self.icon = icon
+        self.title = title
         self.text = text
         self.key = key
         
     def render_using(self, correlation):
+        if len(correlation['group_by']) > 2:
+            correlation['group_by'][-1] = "and " + correlation['group_by'][-1]
         return self.text.format(
-            strength = int(correlation['correlation'] * 100),
-            group_by = correlation['group_by'],
-            start = correlation['start'][0:10],
-            end = correlation['end'][0:10],
+            strength = int((correlation['correlation'] ** 2) * 100),
+            inverse = "inverse " if correlation['correlation'] < 0 else "",
+            group_by = ', '.join(correlation['group_by']),
+            start = datetime(*correlation['start'][0:10]).strftime('%Y-%m-%d'),
+            end = datetime(*correlation['end'][0:10]).strftime('%Y-%m-%d'),
             paths = ' and your '.join([(path.replace('/', ' ').title()
                  ) for path in correlation['paths']])
         )
