@@ -9,22 +9,30 @@ def iso_year_start(iso_year):
     delta = datetime.timedelta(fourth_jan.isoweekday()-1)
     return fourth_jan - delta 
 
+
 def iso_to_gregorian(iso_year, iso_week, iso_day):
     "Gregorian calendar date for the given ISO year, week and day"
     year_start = iso_year_start(iso_year)
     return year_start + datetime.timedelta(days=iso_day-1, weeks=iso_week-1)
 
 
-
 def json_for_correlation(user, correlation, colors):
-    return normalize_chart_series([{
-        'name': path.replace('/', ' ').title(),
-        'color': colors.next(),
-        'data': format_chart_data(API.get_chart_data(
-                    user, path, correlation['group_by'],
-                    start = "%s-%s-%s" % tuple(correlation['start']),
-                    end = "%s-%s-%s" % tuple(correlation['end'])))
-        } for path in correlation['paths']])    
+    chart_series = []
+    
+    for path in correlation['paths']:
+        chart_data = API.get_chart_data(user, path, correlation['group_by'],
+            start = "%s-%s-%s" % tuple(correlation['start']),
+            end = "%s-%s-%s" % tuple(correlation['end']))
+        
+        chart_series.append({
+            'name': (chart_data['_links']['self']['title']
+                ) if 'title' in chart_data['_links']['self'
+                ] else path.replace('/', ' ').title(),
+            'color': colors.next(),
+            'data': format_chart_data(chart_data['data'])
+        })
+    return normalize_chart_series(chart_series)
+
 
 def format_chart_data(data):
     # Right now it's a decent heuristic to assume that

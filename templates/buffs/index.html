@@ -47,7 +47,10 @@ $(document).ready(function () {
           });
           graph.render();
           
-          $("#buff_info").slideDown(100, function () { $("#buff_info").attr("style", "overflow:display;display:block") })
+          $("#buff_info").slideDown(100, function () {
+              $("#buff_info").attr("style", "overflow:display;display:block");
+              $("html, body").animate({ scrollTop: $(document).height() }, 100);
+            })
         })
       .tickFormat({
           format: function(d, i){

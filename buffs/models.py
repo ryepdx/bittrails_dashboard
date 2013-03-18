@@ -11,7 +11,7 @@ class BuffTemplate(Model):
         self.text = text
         self.key = key
         
-    def render_using(self, correlation):
+    def render_using(self, correlation, charts):
         if len(correlation['group_by']) > 2:
             correlation['group_by'][-1] = "and " + correlation['group_by'][-1]
         return self.text.format(
@@ -20,8 +20,7 @@ class BuffTemplate(Model):
             group_by = ', '.join(correlation['group_by']),
             start = datetime(*correlation['start'][0:10]).strftime('%Y-%m-%d'),
             end = datetime(*correlation['end'][0:10]).strftime('%Y-%m-%d'),
-            paths = ' and your '.join([(path.replace('/', ' ').title()
-                 ) for path in correlation['paths']])
+            paths = ' and your '.join([chart['name'] for chart in charts])
         )
 
 class CorrelationBuff(Model):

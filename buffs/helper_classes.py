@@ -26,7 +26,7 @@ class CorrelationBuffCharts(object):
             
             return {
                 'title': template.title,
-                'text': template.render_using(correlation),
+                'text': template.render_using(correlation, chart_data),
                 'chart_data': chart_data,
                 'chart_id': self.chart_prefix + str(self.current_id),
                 'buff_id': correlation['_id'],
