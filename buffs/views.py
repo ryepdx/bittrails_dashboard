@@ -35,13 +35,9 @@ def index():
     a_year_ago = (today - datetime.timedelta(days = 365))
     
     # Grab the last buff we logged.
-    # TODO: Make this more robust. Should really be grabbing the latest 'end'
-    # date where 'end' is not null. But sorting by 'end' seems to be producing
-    # strange results.
-    last_buff = CorrelationBuff.find_one(None, sort = [('_id', pymongo.DESCENDING)])
+    last_buff = CorrelationBuff.find_one(None, sort = [('$end', pymongo.DESCENDING)])
     if last_buff:
-        start_date = max(a_year_ago, (datetime.datetime(
-            *(last_buff['end'] if last_buff['end'] else last_buff['start']))
+        start_date = max(a_year_ago, (datetime.datetime(*(last_buff['end']))
             + datetime.timedelta(days = 1)).replace(tzinfo = SERVER_TIMEZONE))
     else:
         start_date = a_year_ago
