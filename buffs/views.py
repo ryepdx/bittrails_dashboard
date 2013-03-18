@@ -34,7 +34,7 @@ def index():
         second = 0, microsecond = 0) - datetime.timedelta(days = 365))
     
     # Grab the last buff we logged.
-    last_buff = CorrelationBuff.find_one(None, sort = [('start', pymongo.DESCENDING)])
+    last_buff = CorrelationBuff.find_one(None, sort = [('_id', pymongo.DESCENDING)])
     if last_buff:
         start_date = max(a_year_ago,
             (datetime.datetime(*last_buff['end'])
