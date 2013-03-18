@@ -93,7 +93,11 @@ $(document).ready(function () {
 
 <div class="eight columns">
     <div><h1>History</h1></div>
-    <div id="buffs_timeline"></div>
+    <div id="buffs_timeline">
+        {% if not accepted_buffs %}
+        <p>You haven't accepted any suggested buffs yet.</p>
+        {% endif %}
+    </div>
 </div>
 
 <div class="four columns">

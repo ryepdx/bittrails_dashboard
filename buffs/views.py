@@ -101,15 +101,18 @@ def index():
             "title": buff['title']
         })
         
-        bar_height = 40
-        margin = {"left": 40, "right": 30, "top": 30, "bottom": 30}
+    bar_height = 40
+    margin = {"left": 40, "right": 30, "top": 30, "bottom": 30}
     
     return render_template('%s/index.html' % app.name,
         outstanding_buffs = outstanding_buffs, 
-        accepted_buffs = json.dumps(accepted_buffs.values()),
+        accepted_buffs = json.dumps(accepted_buffs.values()
+            ) if accepted_buffs else None,
         OUTSTANDING = CorrelationBuff.OUTSTANDING,
-        timeline_width = (max_end - min_start)/10000,
-        start_year = datetime.datetime.fromtimestamp(min_start).year,
+        timeline_width = ((max_end - min_start)/10000
+            ) if max_end and min_start else None,
+        start_year = (datetime.datetime.fromtimestamp(min_start).year
+            ) if min_start else None,
         bar_height = bar_height,
         margin = json.dumps(margin))
 
