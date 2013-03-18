@@ -12,15 +12,15 @@ from flask import render_template, Blueprint, url_for, redirect, request
 from flask.ext.login import current_user
 from auth import API, BLUEPRINT
 from buffs.models import BuffTemplate, CorrelationBuff
-from buffs.helper_classes import CorrelationBuffCharts
+from buffs.helper_classes import CorrelationBuffChart
 from settings import SERVER_TIMEZONE
 
 app = Blueprint('buffs', __name__, template_folder='/templates')
 
 @app.route('/')
 def index():
-    active_buffs = []
-    accepted_buffs = []
+    active_buffs = {}
+    accepted_buffs = {}
     outstanding_buffs = []
     paths = ['lastfm/scrobbles/echonest/totals',
              'lastfm/scrobbles/echonest/energy/averages']
@@ -32,67 +32,26 @@ def index():
     
     today = datetime.datetime.now(SERVER_TIMEZONE).replace(
         hour = 0, minute = 0, second = 0, microsecond = 0)
-    a_year_ago = (today - datetime.timedelta(days = 365))
     
-    # Grab the last buff we logged.
-    last_buff = CorrelationBuff.find_one(None, sort = [('$end', pymongo.DESCENDING)])
-    if last_buff:
-        start_date = max(a_year_ago, (datetime.datetime(*(last_buff['end']))
-            + datetime.timedelta(days = 1)).replace(tzinfo = SERVER_TIMEZONE))
-    else:
-        start_date = a_year_ago
-    
-    # Grab any correlations the user has yet to accept or decline.
-    outstanding_buffs = CorrelationBuff.find_outstanding(lazy = False)
-    
-    for interval, group_by in group_by_intervals.items():
-        intervalString = ",".join(sorted(group_by))
-        
-        # Just grabbing the correlations for this user from the last 30 days
-        # or since the last logged buff, whichever is later.
-        new_correlations = API.get_correlations(
-            current_user, paths, group_by, start_date, continuous = True)
-        
-        # Cache all the new correlations.
-        # TODO: Filter out any that were previously saved as active buffs and
-        # update their end values if applicable.
-        for correlation in new_correlations:
-            buff = CorrelationBuff(user_id = current_user['_id'], **correlation)
-            end = dict(zip(correlation['group_by'], correlation['end']))
-            end = datetime.datetime(end['year'], end['month'], end['day'])
-            
-            # If the correlation end date is today, then we consider the buff
-            # active. We want to change its end date to None.
-            if today == end:
-                buff['end'] = None
-            
-            buff_id = CorrelationBuff.save(buff)
-            correlation['_id'] = buff_id
-            correlation['state'] = buff['state']
-            outstanding_buffs.append(buff)
-    
-    # Format the correlations as buffs.
-    outstanding_buffs = list(CorrelationBuffCharts(current_user,
-        outstanding_buffs, chart_prefix = "new_chart"))
-    
-    # Grab any buffs the user has previously accepted.
-    accepted_buffs = {}
+    # Keeping track of the max_end and min_start dates of the user's accepted
+    # buffs so we can determine how wide the timeline needs to be in order to
+    # get the amount of spacing between ticks we want.
     max_end = None
     min_start = None
     
-    for buff in CorrelationBuffCharts(current_user,
-    CorrelationBuff.find_accepted(lazy = False), chart_prefix = "new_chart"):
+    # Grab any buffs the user has previously accepted.
+    for buff in CorrelationBuff.find_accepted(lazy = False):
+        buff = CorrelationBuff(**buff)
+        chart = CorrelationBuffChart.create(current_user, buff)
         start_timestamp = int(time.mktime(
-            datetime.datetime(*buff['start']).timetuple()))
-        buff_key = ":".join(buff['paths']) + (
-            "+" if buff["correlation"] > 0 else "-")
+            datetime.datetime(*buff.start).timetuple()))
         
         if buff['end']:
             end_timestamp = int(
-                time.mktime(datetime.datetime(*buff['end']).timetuple()))
+                time.mktime(datetime.datetime(*buff.end).timetuple()))
         else:
             end_timestamp = time.localtime()
-            active_buffs.append(buff)
+            active_buffs[buff.key] = buff
             
         if max_end == None or end_timestamp > max_end:
             max_end = end_timestamp
@@ -100,25 +59,101 @@ def index():
         if min_start == None or start_timestamp < min_start:
             min_start = start_timestamp
         
-        if buff_key not in accepted_buffs:
-            accepted_buffs[buff_key] = {
-                "icon": "/static/images/buffs/%s" % buff['icon'],
+        # Set up the JSON data the timeline expects.
+        if buff.type_key not in accepted_buffs:
+            accepted_buffs[buff.type_key] = {
+                "icon": "/static/images/buffs/%s" % chart['icon'],
                 "times": []}
             
-        # Multiplying the times by 1000 because Javascript expects milliseconds.
-        accepted_buffs[buff_key]["times"].append({
+        # Multiplying timestamps by 1000 because the timeline expects
+        # milliseconds and Python uses seconds.
+        accepted_buffs[buff.type_key]["times"].append({
             "starting_time": start_timestamp * 1000,
             "ending_time": end_timestamp * 1000,
             "correlation": "%s%%" % int(round(buff["correlation"]*100)),
-            "chart_data": buff["chart_data"],
-            "chart_id": buff["chart_id"],
-            "text": buff['text'],
-            "title": buff['title']
+            "chart_data": chart["chart_data"],
+            "chart_id": chart["chart_id"],
+            "text": chart['text'],
+            "title": chart['title']
         })
         
-    bar_height = 40
-    margin = {"left": 40, "right": 30, "top": 30, "bottom": 30}
+    # Grab any correlations the user has yet to accept or decline.
+    outstanding_buffs = CorrelationBuff.find_outstanding(lazy = False)
     
+    # Grab the latest buff we logged, whether it was accepted or not.
+    last_buff = CorrelationBuff.find_one(None, sort = [('$end', pymongo.DESCENDING)])
+    a_year_ago = (today - datetime.timedelta(days = 365))
+
+    if last_buff:
+        start_date = max(a_year_ago, (datetime.datetime(*(last_buff['end']))
+            + datetime.timedelta(days = 1)).replace(tzinfo = SERVER_TIMEZONE))
+    else:
+        start_date = a_year_ago
+    
+    # If there were active buffs, we want to ask for correlations from the start
+    # date of the earliest one. That way we can see if the active buffs have
+    # extended out any further. This may, of course, result in some completed
+    # buffs being returned *again*, so we'll have to filter those out by making
+    # sure we don't include any correlations with an end date before the end
+    # date of last_buff.
+    correlation_start_date = today
+    if active_buffs:
+        for buff in active_buffs:
+            buff_start = datetime.datetime(*buff['start'])
+            
+            if buff_start < correlation_start_date:
+                correlation_start_date = buff_start
+    else:
+        correlation_start_date = start_date
+    
+    # Look for new correlations.
+    for interval, group_by in group_by_intervals.items():
+        intervalString = ",".join(sorted(group_by))
+        
+        # Just grabbing the correlations for this user from the last 30 days
+        # or since the last logged buff, whichever is later.
+        new_correlations = API.get_correlations(current_user, paths, group_by,
+            correlation_start_date, continuous = True)
+        
+        # Cache all the new correlations and update active buff end times
+        # where applicable.
+        for correlation in new_correlations:
+            buff = CorrelationBuff(user_id = current_user['_id'], **correlation)
+            end = dict(zip(buff['group_by'], buff['end']))
+            start = dict(zip(buff['group_by'], buff['end']))
+            end = datetime.datetime(end['year'], end['month'], end['day'])
+            start = datetime.datetime(
+                start['year'], start['month'], start['day'])
+            
+            # If this has an start date greater than start_date, then we know
+            # we need to save it. If not, and if it doesn't correspond to an
+            # active buff, then we can ignore it. The user will have already
+            # been prompted with it, by definition.
+            if start > start_date:
+                # If the correlation end date is today, then we consider the buff
+                # active. We want to change its end date to None.
+                if today == end:
+                    buff['end'] = None
+                
+                buff_id = CorrelationBuff.save(buff)
+                correlation['_id'] = buff_id
+                correlation['state'] = buff['state']
+                outstanding_buffs.append(buff)
+                
+            # Does this "new correlation" correspond to a previously accepted
+            # active buff? Does the new correlation provide an end date for that
+            # active buff? Then update the buff's end date.
+            elif buff.key in active_buffs and end != today:
+                active_buffs[buff.key]['end'] = buff['end']
+    
+    # Save all active buffs.
+    for buff in active_buffs.values():
+        CorrelationBuff.save(buff)
+    
+    # Format the correlations as buffs.
+    outstanding_buffs = [CorrelationBuffChart.create(current_user, buff
+        ) for buff in outstanding_buffs]
+        
     return render_template('%s/index.html' % app.name,
         active_buffs = active_buffs,
         outstanding_buffs = outstanding_buffs, 
@@ -128,9 +163,7 @@ def index():
         timeline_width = ((max_end - min_start)/10000
             ) if max_end and min_start else None,
         start_year = (datetime.datetime.fromtimestamp(min_start).year
-            ) if min_start else None,
-        bar_height = bar_height,
-        margin = json.dumps(margin))
+            ) if min_start else None)
 
 @app.route('/<buff_id>')
 def buff(buff_id):

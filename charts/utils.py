@@ -16,13 +16,13 @@ def iso_to_gregorian(iso_year, iso_week, iso_day):
     return year_start + datetime.timedelta(days=iso_day-1, weeks=iso_week-1)
 
 
-def json_for_correlation(user, correlation, colors):
+def json_for_buff(user, buff, colors):
     chart_series = []
     
-    for path in correlation['paths']:
-        chart_data = API.get_chart_data(user, path, correlation['group_by'],
-            start = "%s-%s-%s" % tuple(correlation['start']),
-            end = "%s-%s-%s" % tuple(correlation['end']))
+    for path in buff['paths']:
+        chart_data = API.get_chart_data(user, path, buff['group_by'],
+            start = "%s-%s-%s" % tuple(buff['start']),
+            end = "%s-%s-%s" % tuple(buff['end']))
         
         chart_series.append({
             'name': (chart_data['_links']['self']['title']

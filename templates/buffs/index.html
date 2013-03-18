@@ -32,8 +32,8 @@ $(document).ready(function () {
     var chart = d3.timeline()
       .stack()
       .width({{ timeline_width }})
-      .margin({{ margin|safe }})
-      .itemHeight({{ bar_height }})
+      .margin({left: 40, right: 30, top: 30, bottom: 30})
+      .itemHeight(40)
       .click(function (d, i, datum) {
           document.getElementById('buff_info_chart').innerHTML = "";
           document.getElementById('buff_info_title').innerHTML = d.title;

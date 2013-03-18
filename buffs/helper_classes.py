@@ -1,39 +1,28 @@
 import buffs.utils
-import charts
+import charts.utils
 import itertools
 
-class CorrelationBuffCharts(object):
-    def __init__(self, user, correlations, chart_prefix = "chart",
-    colors = ['steelblue', 'tomato']):
-        self.current_id = 0
-        self.colors = itertools.cycle(colors)
-        self.correlations = correlations
-        self.user = user
-        self.chart_prefix = chart_prefix
+class CorrelationBuffChart(object):
+    colors = itertools.cycle(['steelblue', 'tomato'])
+    chart_index = 0
         
-    def __iter__(self):
-        return self
-        
-    def next(self):
-        if self.current_id >= len(self.correlations):
-            raise StopIteration
-        else:
-            correlation = self.correlations[self.current_id]
-            template = buffs.utils.get_template_for(correlation)
-            chart_data = charts.utils.json_for_correlation(
-                self.user, correlation, colors = self.colors)
-            self.current_id += 1
+    @classmethod
+    def create(cls, user, buff, chart_id_prefix = "buff_chart_"):
+            template = buffs.utils.get_template_for(buff)
+            chart_data = charts.utils.json_for_buff(user, buff,
+                colors = cls.colors)
+            cls.chart_index += 1
             
             return {
                 'title': template.title,
-                'text': template.render_using(correlation, chart_data),
+                'text': template.render_using(buff, chart_data),
                 'chart_data': chart_data,
-                'chart_id': self.chart_prefix + str(self.current_id),
-                'buff_id': correlation['_id'],
-                'state': correlation['state'],
-                'start': correlation['start'],
-                'end': correlation['end'],
-                'correlation': correlation['correlation'],
-                'paths': correlation['paths'],
+                'chart_id': chart_id_prefix + str(cls.chart_index),
+                'buff_id': buff['_id'],
+                'state': buff['state'],
+                'start': buff['start'],
+                'end': buff['end'],
+                'correlation': buff['correlation'],
+                'paths': buff['paths'],
                 'icon': template.icon
             }

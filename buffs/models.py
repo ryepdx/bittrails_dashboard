@@ -30,7 +30,7 @@ class CorrelationBuff(Model):
     DECLINED = 2
     
     def __init__(self, user_id = '', paths = [], group_by = [], start = '',
-    end = '', correlation = 0, state = OUTSTANDING):
+    end = '', correlation = 0, state = OUTSTANDING, **kwargs):
         self.user_id = user_id
         self.paths = paths
         self.group_by = group_by
@@ -38,10 +38,11 @@ class CorrelationBuff(Model):
         self.end = end
         self.correlation = correlation
         self.state = state
+        super(CorrelationBuff, self).__init__(**kwargs)
 
     @classmethod
-    def find_in_state(cls, state, lazy = True):
-        results = cls.find({ 'state': state })
+    def find_in_state(cls, state, lazy = True, **kwargs):
+        results = cls.find({ 'state': state }, **kwargs)
         if lazy:
             return results
         else:
@@ -54,6 +55,14 @@ class CorrelationBuff(Model):
     @classmethod
     def find_accepted(cls, **kwargs):
         return cls.find_in_state(cls.ACCEPTED, **kwargs)
+
+    @property
+    def key(self):
+        return self.buff_type + str(self.start)
+        
+    @property
+    def type_key(self):
+        return ":".join(self.paths) + ("+" if self.correlation > 0 else "-")
 
     @property
     def chart_id(self):
