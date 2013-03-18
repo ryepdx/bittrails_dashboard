@@ -19,6 +19,7 @@ app = Blueprint('buffs', __name__, template_folder='/templates')
 
 @app.route('/')
 def index():
+    active_buffs = []
     accepted_buffs = []
     outstanding_buffs = []
     paths = ['lastfm/scrobbles/echonest/totals',
@@ -29,16 +30,19 @@ def index():
     }
     continuous = True
     
-    a_year_ago = (
-        datetime.datetime.now(SERVER_TIMEZONE).replace(hour = 0, minute = 0,
-        second = 0, microsecond = 0) - datetime.timedelta(days = 365))
+    today = datetime.datetime.now(SERVER_TIMEZONE).replace(
+        hour = 0, minute = 0, second = 0, microsecond = 0)
+    a_year_ago = (today - datetime.timedelta(days = 365))
     
     # Grab the last buff we logged.
+    # TODO: Make this more robust. Should really be grabbing the latest 'end'
+    # date where 'end' is not null. But sorting by 'end' seems to be producing
+    # strange results.
     last_buff = CorrelationBuff.find_one(None, sort = [('_id', pymongo.DESCENDING)])
     if last_buff:
-        start_date = max(a_year_ago,
-            (datetime.datetime(*last_buff['end'])
-             + datetime.timedelta(days = 1)).replace(tzinfo = SERVER_TIMEZONE))
+        start_date = max(a_year_ago, (datetime.datetime(
+            *(last_buff['end'] if last_buff['end'] else last_buff['start']))
+            + datetime.timedelta(days = 1)).replace(tzinfo = SERVER_TIMEZONE))
     else:
         start_date = a_year_ago
     
@@ -54,8 +58,18 @@ def index():
             current_user, paths, group_by, start_date, continuous = True)
         
         # Cache all the new correlations.
+        # TODO: Filter out any that were previously saved as active buffs and
+        # update their end values if applicable.
         for correlation in new_correlations:
             buff = CorrelationBuff(user_id = current_user['_id'], **correlation)
+            end = dict(zip(correlation['group_by'], correlation['end']))
+            end = datetime.datetime(end['year'], end['month'], end['day'])
+            
+            # If the correlation end date is today, then we consider the buff
+            # active. We want to change its end date to None.
+            if today == end:
+                buff['end'] = None
+            
             buff_id = CorrelationBuff.save(buff)
             correlation['_id'] = buff_id
             correlation['state'] = buff['state']
@@ -74,10 +88,15 @@ def index():
     CorrelationBuff.find_accepted(lazy = False), chart_prefix = "new_chart"):
         start_timestamp = int(time.mktime(
             datetime.datetime(*buff['start']).timetuple()))
-        end_timestamp = int(time.mktime(
-            datetime.datetime(*buff['end']).timetuple()))
         buff_key = ":".join(buff['paths']) + (
             "+" if buff["correlation"] > 0 else "-")
+        
+        if buff['end']:
+            end_timestamp = int(
+                time.mktime(datetime.datetime(*buff['end']).timetuple()))
+        else:
+            end_timestamp = time.localtime()
+            active_buffs.append(buff)
             
         if max_end == None or end_timestamp > max_end:
             max_end = end_timestamp
@@ -105,6 +124,7 @@ def index():
     margin = {"left": 40, "right": 30, "top": 30, "bottom": 30}
     
     return render_template('%s/index.html' % app.name,
+        active_buffs = active_buffs,
         outstanding_buffs = outstanding_buffs, 
         accepted_buffs = json.dumps(accepted_buffs.values()
             ) if accepted_buffs else None,

@@ -102,7 +102,9 @@ $(document).ready(function () {
 
 <div class="four columns">
     <h1>Active</h1>
+    {% if not active_buffs %}
     <p>You don't have any active buffs.</p>
+    {% endif %}
 </div>
 {% endblock%}
 
