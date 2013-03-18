@@ -39,36 +39,12 @@ def home():
     
     show_tooltip = (len(connected) < 2)
     
-    if 'twitter' in connected:
-        tweets = API.get(
-            ('twitter/statuses/user_timeline.json?screen_name=%s&count=%s'
-                % (current_user.uids['twitter'], 6)), user = current_user).content
-    else:
-        tweets = None
-
-    if 'foursquare' in connected:
-        checkins = API.get(
-            'foursquare/users/self/checkins?limit=2', user = current_user)
-        
-        if checkins and checkins.status == 200:
-            checkins = checkins.content['response']['checkins']['items']
-        else:
-            checkins = []
-    else:
-        checkins = None
-    
     return render_template('%s/home.html' % app.name,
         show_tooltip = show_tooltip,
         connected = connected,
         not_connected = not_connected,
-        tweets = tweets,
-        checkins = checkins,
         DEBUG = DEBUG)
     
-@app.route('/insights')
-def insights():
-    pass
-
 def create_api_test(apis):
     @app.route('/test')
     def test():
