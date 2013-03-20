@@ -20,28 +20,30 @@ $(document).ready(function () {
 {% block content %}
 <div class="six columns">
 <h1>Your Streams</h1>
-{% for service in connected %}
-    <img src='/static/images/buttons/{{ service }}.png' />
-{% endfor %}
+{% if connected %}
+<ul>
+    {% for service in connected %}
+    <li>{{ service|title|replace('_', ' ') }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 </div>
 
 <div class="six columns">
 <h1>Available Streams</h1>
-{% for service in not_connected %}
-    <a href="/auth/{{ service }}/begin">
-        <img title="Click here to connect your {{ service.title() }} account."
-             src='/static/images/buttons/{{ service }}.png'
-             class='connect_button' />
-    </a>
-{% endfor %}
 {% if not_connected|length == 0 and no_custom_streams %}
     <em>You've connected all the available datastreams!</em>
 {% else %}
-<a href="#">
-    <img src='/static/images/buttons/plus.png'
-         alt='Add a custom datastream.'
-         title='Add a custom datastream.' />
-</a>
+<ul>
+{% for service in not_connected %}
+    <li>
+        <a href="/auth/{{ service }}/begin">
+            {{ service|title|replace('_', ' ') }}
+        </a>
+    </li>
+{% endfor %}
+    <li><a href="/custom_datastream">Add a custom datastream...</a></li>
+</ul>
 {% endif %}
 </div>
 

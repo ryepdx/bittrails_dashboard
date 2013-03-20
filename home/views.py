@@ -1,6 +1,6 @@
 from flask_rauth import session
-from flask import render_template, Blueprint, url_for, redirect
-from flask.ext.login import logout_user, current_user
+from flask import render_template, Blueprint, url_for, redirect, flash
+from flask.ext.login import logout_user, current_user, login_required
 from settings import BITTRAILS_AUTH_URL, DEBUG
 from auth import signals, API, BLUEPRINT
 from auth.auth_settings import TOKENS_KEY
@@ -44,7 +44,19 @@ def home():
         connected = connected,
         not_connected = not_connected,
         DEBUG = DEBUG)
-    
+
+@app.route('/custom_datastream', methods=['GET'])
+@login_required
+def custom_datastream_form():
+    return render_template('%s/custom_datastream.html' % app.name)
+
+@app.route('/custom_datastream', methods=['POST'])
+@login_required
+def create_custom_datastream():
+    API.create_custom_datastream(request.form.url, request.form.name)
+    flash("Custom datastream created!")
+    return redirect(url_for('.home'))
+
 def create_api_test(apis):
     @app.route('/test')
     def test():
@@ -54,4 +66,5 @@ def create_api_test(apis):
     @app.route('/test_realm')
     def test():
         return str(apis['bittrails'].get(
-            'protected_realm', oauth_token=session[TOKENS_KEY]['bittrails']).response.content)
+            'protected_realm', oauth_token=session[TOKENS_KEY]['bittrails']
+        ).response.content)

@@ -24,8 +24,9 @@ def main():
     
     # Set up login and registration.
     login_manager = LoginManager()
+    login_manager.login_view = "home.login"
     login_manager.setup_app(app)
-    app.login_manager.user_loader(login.load_user)  
+    app.login_manager.user_loader(login.load_user)
     
     if DEBUG:    
         @app.route('/url_map')

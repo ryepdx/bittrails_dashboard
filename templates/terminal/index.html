@@ -1,4 +1,31 @@
 {% extends "base.html" %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/stylesheets/terminal.css" />
+<script type="text/javascript">
+$(document).ready(function () {
+   
+    $("#http_get").click(function (e) {
+        $(e.target).hide();
+        $("#http_post").show();
+        $("#http_method").val("POST");
+    });
+    
+    $("#http_post").click(function (e) {
+        $(e.target).hide();
+        $("#http_get").show();
+        $("#http_method").val("GET");
+    });
+    
+    {% if http_method == "POST" %}
+    $("#http_get").hide();
+    {% else %}
+    $("#http_post").hide();
+    {% endif %}
+});
+</script>
+{% endblock %}
+
 {% block content %}
 <h1>API Terminal</h1>
 {% if status %}
@@ -14,9 +41,11 @@
 <form action='.' method='post'>
     <div class="row collapse">
         <div class="three small-3 large-2 columns">
-            <span class="prefix">GET {{ base_url }}</span>
+            <span id="http_get" class="prefix">GET {{ base_url }}</span>
+            <span id="http_post" class="prefix">POST {{ base_url }}</span>
         </div>
         <div class="nine small-9 large-10 columns">
+            <input type="hidden" id="http_method" name="method" value="{{ http_method }}" />
             <input type="text" id="cmd" name="cmd" value="{{cmd}}" />
         </div>
     </div>

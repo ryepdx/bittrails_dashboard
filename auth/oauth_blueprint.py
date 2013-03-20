@@ -102,15 +102,14 @@ class OAuthBlueprint(Blueprint):
             return redirect(url_for(self.oauth_completed_view))
         return oauth_finished
 
-class OAuth(RauthOAuth1):
+class BitTrailsOAuth(RauthOAuth1):
     def request(self, method, uri, user, **kwargs):
         if user:
-            return super(OAuth, self).request(method, uri,
+            return super(BitTrailsOAuth, self).request(method, uri,
                 oauth_token = user.access_key, **kwargs)
         else:
-            return super(OAuth, self).request(method, uri, **kwargs)
-            
-class BitTrailsOAuth(OAuth):
+            return super(BitTrailsOAuth, self).request(method, uri, **kwargs)
+    
     def get_aspects(self):
         response = self.get('children.json', user = None).content
         return response
@@ -155,3 +154,8 @@ class BitTrailsOAuth(OAuth):
         
         return json.loads(self.get(add_params_to_uri(
             'correlations.json', params), user = user).content)
+            
+    def create_custom_datastream(self, url, name):
+        self.post('root.json', data = {
+            'url': url, 'path': '/custom/' + name.replace(' ', '_'),
+            'title': name })

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add a Custom Datastream</h1>
+<p>
+    To add a custom datastream, you must put a text file containing your data on
+    a publicly accessible server. Each line of the text file must consist of the
+    date a datum was recorded, in ISO 8601 format (i.e., "YYYY-MM-DD"), followed
+    by a comma, followed by the datum.
+</p>
+
+<p>
+    For example:
+    <div class="panel">
+<pre>
+2012-12-31,100
+2013-01-01,89
+2013-01-02,94
+2013-01-03,101
+</pre>
+    </div>
+</p>
+
+<p>
+    We will redownload the file once a day and refresh your data on Bit Trails
+    using it. Removing data from the file will not remove them from Bit Trails,
+    but changing a datum associated with a date in the file will change that
+    datum on Bit Trails.
+</p>
+
+<p>
+    Currently only numeric data is permissible.
+</p>
+
+<p>
+    Please enter the URL for the file you would like to use and the name you
+    would like Bit Trails to use when referring to it in buffs:
+    <form action="." method="post">
+        <div class="row">
+            <div class="one small-1 columns">
+              <label for="right-label" class="right inline">URL</label>
+            </div>
+            <div class="eleven small-11 columns">
+              <input type="text" id="datastream_url" name="url" value="http://" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="one small-1 columns">
+              <label for="datastream_name" class="right inline">Name</label>
+            </div>
+            <div class="eleven small-11 columns">
+              <input type="text" id="datastream_name" name="name" value=""
+              placeholder="(e.g., number of steps, calories burned, hours slept, mood rating...)" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="one small-1 columns"></div>
+            <div class="eleven small-11 columns">
+                <input type="submit" class="button" />
+            </div>
+        </div>
+    </form>
+</p>
+{% endblock %}
