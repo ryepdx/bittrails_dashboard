@@ -15,7 +15,7 @@
   <body>
     <nav class="top-bar" style="margin-bottom: 10px">
         <ul class="left">
-            <li class="name"><h1><a href="#">Bit Trails <span class="subheader">Dashboard</span></a></h1></li>
+            <li class="name"><h1><a href="/">Bit Trails <span class="subheader">Dashboard</span></a></h1></li>
           {% if current_user.is_authenticated() %}
           {% if request.path == url_for('home.home') %} <li class="active"> {% else %} <li> {% endif %}
           <a href="{{ url_for('home.home') }}">Account</a> </li>

@@ -17,7 +17,7 @@ class ChartForm(Form):
         datastreams = user['uids'].keys()
         datastream = (self.datastream.data if self.datastream.data != 'None'
                                            else datastreams[0])
-        aspects = API.get_aspects()[datastream]['aspects']
+        aspects = API.get_datastreams()[datastream]['aspects']
         
         self.datastream.choices = list(
             (stream, stream.replace('_', ' ').title()) for stream in datastreams)

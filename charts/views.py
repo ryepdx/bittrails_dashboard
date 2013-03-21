@@ -36,7 +36,7 @@ def index():
         
     return render_template('%s/index.html' % app.name,
             datastreams = datastreams,
-            aspects = json.dumps(API.get_aspects()),
+            aspects = json.dumps(API.get_datastreams()),
             frequencies = API.get_intervals(),
             chart_types = API.get_chart_types(),
             form = form,

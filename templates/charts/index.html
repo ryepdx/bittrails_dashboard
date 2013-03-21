@@ -15,20 +15,13 @@ $(document).ready(function () {
                 + value.replace(/_/g, ' ') + "</option>");
         });
     });
-});
-</script>
 
 {% if series %}
 {{ graph.import() }}
-
-<script type="text/javascript">
-$(document).ready(function () {
-    var aspects = {{ aspects|safe }};
-    
     {{ graph.create('#chart', series, form.chart_type.data) }}
+{% endif %}
 });
 </script>
-{% endif %}
 {% endblock %}
 
 {% block content %}

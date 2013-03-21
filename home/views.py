@@ -1,5 +1,5 @@
 from flask_rauth import session
-from flask import render_template, Blueprint, url_for, redirect, flash
+from flask import render_template, Blueprint, url_for, redirect, flash, request
 from flask.ext.login import logout_user, current_user, login_required
 from settings import BITTRAILS_AUTH_URL, DEBUG
 from auth import signals, API, BLUEPRINT
@@ -36,6 +36,9 @@ def home():
             connected.append(service)
         else:
             not_connected.append(service)
+            
+    connected += [
+        stream[0] for stream in API.get_custom_datastreams(current_user)]
     
     show_tooltip = (len(connected) < 2)
     
@@ -53,7 +56,8 @@ def custom_datastream_form():
 @app.route('/custom_datastream', methods=['POST'])
 @login_required
 def create_custom_datastream():
-    API.create_custom_datastream(request.form.url, request.form.name)
+    API.create_custom_datastream(current_user,
+        request.form.get('url'), request.form.get('name'))
     flash("Custom datastream created!")
     return redirect(url_for('.home'))
 

@@ -110,10 +110,22 @@ class BitTrailsOAuth(RauthOAuth1):
         else:
             return super(BitTrailsOAuth, self).request(method, uri, **kwargs)
     
-    def get_aspects(self):
-        response = self.get('children.json', user = None).content
+    def get_datastreams(self, user = None):
+        response = [ (stream, link['href']
+            ) for stream, link in self.get('root.json', user = user
+            ).content['_links'].items(
+            ) if stream != 'self' and stream != 'custom' ]
+            
+        if 'custom' in response:
+            response += self.get_custom_datastreams(user)
+            
         return response
-        
+    
+    def get_custom_datastreams(self, user):
+        return [ (stream, link['href']
+            ) for stream, link in self.get('custom.json', user = user
+            ).content['_links'].items() if stream != 'self' ]    
+    
     def get_intervals(self):
         return ['day', 'week', 'month', 'year']
         
@@ -155,7 +167,7 @@ class BitTrailsOAuth(RauthOAuth1):
         return json.loads(self.get(add_params_to_uri(
             'correlations.json', params), user = user).content)
             
-    def create_custom_datastream(self, url, name):
+    def create_custom_datastream(self, user, url, name):
         self.post('root.json', data = {
             'url': url, 'path': '/custom/' + name.replace(' ', '_'),
-            'title': name })
+            'title': name }, user = user)

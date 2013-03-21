@@ -14,14 +14,14 @@ def home():
     if request.method == "POST":
         if http_method == "POST":
             url_parts = urlparse.urlsplit(request.form.get('cmd'))
-            url = url_parts.scheme + '://' + url_parts.netloc + url_parts.path
+            url = url_parts.path
             params = urlparse.parse_qs(url_parts.query)
             response = API.post(url, data = params, user = current_user)
         else:
             response = API.get(request.form.get('cmd'), user = current_user)
             
         status = response.status
-        result = response.content
+        result = response.content if status == 200 else response.response.content
     else:
         result = None
         status = None
