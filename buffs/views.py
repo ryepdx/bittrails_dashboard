@@ -1,5 +1,6 @@
 import iso8601
 import pymongo
+import pytz
 import itertools
 import json
 import bson
@@ -19,18 +20,26 @@ app = Blueprint('buffs', __name__, template_folder='/templates')
 
 @app.route('/')
 def index():
+    user_tz = current_user.get('timezone', pytz.utc)
     active_buffs = {}
     accepted_buffs = {}
     outstanding_buffs = []
-    paths = ['lastfm/scrobbles/echonest/totals',
+    all_paths = ['lastfm/scrobbles/echonest/totals',
              'lastfm/scrobbles/echonest/energy/averages']
+             
+    # Okay, time to add in custom paths!
+    for datastream, href in API.get_custom_datastreams(current_user):
+        if datastream != 'self':
+            all_paths.append('custom/' + datastream + '/totals')
+            all_paths.append('custom/' + datastream + '/averages')
+        
     group_by_intervals = {
         "day": ["year","month","day"]#, "week": ["isoyear", "isoweek"],
         #"month": ["year", "month"], "year": ["year"]
     }
     continuous = True
     
-    today = datetime.datetime.now(SERVER_TIMEZONE).replace(
+    today = datetime.datetime.now(pytz.utc).replace(
         hour = 0, minute = 0, second = 0, microsecond = 0)
     
     # Keeping track of the max_end and min_start dates of the user's accepted
@@ -44,13 +53,13 @@ def index():
         buff = CorrelationBuff(**buff)
         chart = CorrelationBuffChart.create(current_user, buff)
         start_timestamp = int(time.mktime(
-            datetime.datetime(*buff.start).timetuple()))
+            datetime.datetime(*buff.start, tzinfo = pytz.utc).timetuple()))
         
         if buff['end']:
-            end_timestamp = int(
-                time.mktime(datetime.datetime(*buff.end).timetuple()))
+            end_timestamp = int(time.mktime(
+                datetime.datetime(*buff.end, tzinfo = pytz.utc).timetuple()))
         else:
-            end_timestamp = time.localtime()
+            end_timestamp = time.gmtime()
             active_buffs[buff.key] = buff
             
         if max_end == None or end_timestamp > max_end:
@@ -85,8 +94,8 @@ def index():
     a_year_ago = (today - datetime.timedelta(days = 365))
 
     if last_buff:
-        start_date = max(a_year_ago, (datetime.datetime(*(last_buff['end']))
-            + datetime.timedelta(days = 1)).replace(tzinfo = SERVER_TIMEZONE))
+        start_date = max(a_year_ago, (datetime.datetime(*(last_buff['end']),
+            tzinfo = pytz.utc) + datetime.timedelta(days = 1)))
     else:
         start_date = a_year_ago
     
@@ -110,42 +119,49 @@ def index():
     for interval, group_by in group_by_intervals.items():
         intervalString = ",".join(sorted(group_by))
         
-        # Just grabbing the correlations for this user from the last 30 days
-        # or since the last logged buff, whichever is later.
-        new_correlations = API.get_correlations(current_user, paths, group_by,
-            correlation_start_date, continuous = True)
-        
-        # Cache all the new correlations and update active buff end times
-        # where applicable.
-        for correlation in new_correlations:
-            buff = CorrelationBuff(user_id = current_user['_id'], **correlation)
-            end = dict(zip(buff['group_by'], buff['end']))
-            start = dict(zip(buff['group_by'], buff['end']))
-            end = datetime.datetime(end['year'], end['month'], end['day'])
-            start = datetime.datetime(
-                start['year'], start['month'], start['day'])
+        # Look for new correlations in all combinations of paths.
+        for paths in itertools.combinations(all_paths, 2):
+            # Just grabbing the correlations for this user from the last 30 days
+            # or since the last logged buff, whichever is later.
+            new_correlations = API.get_correlations(current_user, paths, group_by,
+                correlation_start_date, continuous = True)
             
-            # If this has an start date greater than start_date, then we know
-            # we need to save it. If not, and if it doesn't correspond to an
-            # active buff, then we can ignore it. The user will have already
-            # been prompted with it, by definition.
-            if start > start_date:
+            # Cache all the new correlations and update active buff end times
+            # where applicable.
+            for correlation in new_correlations:
+                end = dict(zip(correlation['group_by'], correlation['end']))
+                start = dict(zip(correlation['group_by'], correlation['start']))
+                end = datetime.datetime(end['year'], end['month'], end['day'],
+                    tzinfo = pytz.utc)
+                start = datetime.datetime(start['year'], start['month'],
+                    start['day'], tzinfo = pytz.utc)
+                
                 # If the correlation end date is today, then we consider the buff
                 # active. We want to change its end date to None.
                 if today == end:
-                    buff['end'] = None
+                    correlation['end'] = None
                 
-                buff_id = CorrelationBuff.save(buff)
-                correlation['_id'] = buff_id
-                correlation['state'] = buff['state']
-                outstanding_buffs.append(buff)
-                
-            # Does this "new correlation" correspond to a previously accepted
-            # active buff? Does the new correlation provide an end date for that
-            # active buff? Then update the buff's end date.
-            elif buff.key in active_buffs and end != today:
-                active_buffs[buff.key]['end'] = buff['end']
-    
+                buff = CorrelationBuff.find_or_create(
+                    user_id = current_user['_id'], **correlation)
+                    
+                # If this has an start date greater than start_date, then we know
+                # we need to save it. If not, and if it doesn't correspond to an
+                # active buff, then we can ignore it. The user will have already
+                # been prompted with it, by definition.
+                if (start > start_date 
+                and buff['state'] == CorrelationBuff.OUTSTANDING
+                and '_id' not in buff):
+                    buff_id = CorrelationBuff.save(buff)
+                    correlation['_id'] = buff_id
+                    correlation['state'] = buff['state']
+                    outstanding_buffs.append(buff)
+                    
+                # Does this "new correlation" correspond to a previously accepted
+                # active buff? Does the new correlation provide an end date for that
+                # active buff? Then update the buff's end date.
+                if buff.key in active_buffs and end != today:
+                    active_buffs[buff.key]['end'] = buff['end']
+        
     # Save all active buffs.
     for buff in active_buffs.values():
         CorrelationBuff.save(buff)

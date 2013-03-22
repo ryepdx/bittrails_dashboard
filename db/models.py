@@ -19,6 +19,16 @@ class Model(dict):
             return cls(**result)
         else:
             return result
+            
+    
+    @classmethod
+    def find_or_create(cls, **kwargs):
+        result = cls.find_one(kwargs, as_obj = True)
+        
+        if result:
+            return result
+        else:
+            return cls(**kwargs)
     
     @classmethod
     def insert(cls, obj):

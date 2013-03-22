@@ -1,3 +1,4 @@
+import pytz
 from datetime import datetime
 from db.models import Model
 
@@ -19,7 +20,9 @@ class BuffTemplate(Model):
             inverse = "inverse " if correlation['correlation'] < 0 else "",
             group_by = ', '.join(correlation['group_by']),
             start = datetime(*correlation['start'][0:10]).strftime('%Y-%m-%d'),
-            end = datetime(*correlation['end'][0:10]).strftime('%Y-%m-%d'),
+            end = (datetime(*correlation['end'][0:10])
+                if correlation['end'] else datetime.now(pytz.utc)
+            ).strftime('%Y-%m-%d'),
             paths = ' and your '.join([chart['name'] for chart in charts])
         )
 
@@ -58,7 +61,7 @@ class CorrelationBuff(Model):
 
     @property
     def key(self):
-        return self.buff_type + str(self.start)
+        return self.type_key + str(self.start)
         
     @property
     def type_key(self):
