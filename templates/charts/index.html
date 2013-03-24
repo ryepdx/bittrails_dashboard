@@ -3,25 +3,15 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="/static/stylesheets/charts.css" />
-<script type="text/javascript">
-$(document).ready(function () {
-    var aspects = {{ aspects|safe }};
-    
-    $('#datastream').change(function (e) {
-        var $aspect_dd = $('#aspect');
-        $aspect_dd.empty();
-        $.each(aspects[e.target.value]['aspects'], function (i, value) {
-            $aspect_dd.append("<option value='" + value + "'>"
-                + value.replace(/_/g, ' ') + "</option>");
-        });
-    });
 
 {% if series %}
 {{ graph.import() }}
+<script type="text/javascript">
+$(document).ready(function () {
     {{ graph.create('#chart', series, form.chart_type.data) }}
-{% endif %}
 });
 </script>
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -33,43 +23,52 @@ s<div class="six columns">
 #}
 
 {% if series %}
-<div div class="twelve columns">
-    <h1>Your {{ form.datastream.data|replace('_', ' ')|title }} 
-        {{ form.aspect.data|replace('_', ' ') }} 
-        by {{ form.frequency.data }}
-    </h1>
-</div>
+
+<h1>Your {{ datastream_heading }} by {{ group_by_heading }}</h1>
+
+
 {# Breaking out of the container div. Not sure if I like this, but... #}
 </div>
+
 <div id="chart_container" class="twelve columns four-mobile row">
+
+    {% if series.0.data %}
     <div id="chart"></div>
+
+    {% else %}
+    <div id="no_data_warning">
+        <p>We haven't pulled any data in for this datastream yet!</p>
+        <p>If you're sure there should be data here, please wait a minute and try again.</p>
+    </div>
+
+{% endif %}
+
 </div>
 {# Continuing the container div. #}
 <div div class="twelve columns">
+
 {% endif %}
 
-<div div class="twelve columns">
-    <h1>Make a Chart</h1>
-    <div class="new-chart">
-        {% for field in form %}
-            {% if field.errors %}
-                {{ field.name }}:
-                <ul>
-                {% for error in field.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endfor %}
-        <form action='' method='post'>
-            {{form.request_url.label}}: {{form.request_url}}
-            <input class="button" type="submit" value="Create" />
-        </form>
-    {#<form action='' method='post'>
-        Show me my {{ form.datastream }} {{ form.aspect }} by
-        {{ form.frequency }} as a {{ form.chart_type }} graph.
+{% if not series %}
+<h1>Make a Chart</h1>
+{% endif %}
+
+<div class="new-chart">
+    {% for field in form %}
+        {% if field.errors %}
+            {{ field.name }}:
+            <ul>
+            {% for error in field.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endfor %}
+    <form action='' method='post'>
+        Show me my {{ form.datastream }} by
+        {{ form.group_by }} as a {{ form.chart_type }} graph.
         <input class="button" type="submit" value="Create" />
-    </form>#}
+    </form>
 </div>
-</div>
+
 {% endblock%}

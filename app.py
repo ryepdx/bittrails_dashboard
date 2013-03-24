@@ -19,6 +19,7 @@ def main(settings = settings, use_reloader = False):
     import charts.views
     import buffs.views
     import twitter_demo.views
+    import terminal.views
     import flask.ext.login
     
     errors.register_error_pages(app)
@@ -33,6 +34,9 @@ def main(settings = settings, use_reloader = False):
     login_manager.setup_app(app)
     app.login_manager.user_loader(login.load_user)
         
+    if settings.DEBUG:
+        app.register_blueprint(terminal.views.app, url_prefix='/terminal')    
+    
     # Run the app!
     app.run(host = '0.0.0.0', port = settings.PORT, debug = settings.DEBUG,
         use_reloader = use_reloader)

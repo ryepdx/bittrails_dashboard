@@ -6,20 +6,20 @@ class AdHocChartForm(Form):
 
 class ChartForm(Form):
     datastream = SelectField(u'Datastream')
-    aspect = SelectField(u'Aspect')
-    frequency = SelectField(u'Frequency', choices = list(
-        (key, key) for key in API.get_intervals()))
-    chart_type = SelectField(u'Chart Type', choices = list(
-        (key, key) for key in API.get_chart_types()))
+    group_by = SelectField(u'Aggregation', choices = [
+        ("year,month,day", 'day'),
+        ("isoyear,isoweek", 'week'),
+        ("year,month", 'month'),
+        ("year", 'year')
+    ])
+    chart_type = SelectField(u'Chart Type', choices = [
+        ('line', 'line'), ('bar', 'bar'), ('scatterplot', 'scatterplot'),
+        ('area', 'area')])
     
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, datastreams, *args, **kwargs):
         super(ChartForm, self).__init__(*args, **kwargs)
-        datastreams = user['uids'].keys()
-        datastream = (self.datastream.data if self.datastream.data != 'None'
-                                           else datastreams[0])
-        aspects = API.get_datastreams()[datastream]['aspects']
-        
-        self.datastream.choices = list(
-            (stream, stream.replace('_', ' ').title()) for stream in datastreams)
-        self.aspect.choices = list(
-            (aspect, aspect.replace('_', ' ')) for aspect in aspects)
+        #self.datastream.value = (self.datastream.data if self.datastream.data != 'None'
+        #                                   else datastreams[0])
+                                           
+        self.datastream.choices = [(stream[1]['href'], stream[1]['title']
+            ) for stream in datastreams]

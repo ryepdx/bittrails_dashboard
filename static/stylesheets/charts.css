@@ -30,6 +30,16 @@ div.new-chart input[type=submit] {
     padding-bottom: 30px;
 }
 
+#no_data_warning {
+    font-style: italic;
+    text-align: center;
+    padding: 100px;
+    background-color: #FEE;
+    border: thin solid red;
+    border-left: 0px;
+    border-right: 0px;
+}
+
 #chart .detail .x_label {
     bottom: 0px;
 }
@@ -45,6 +55,5 @@ div.new-chart input[type=submit] {
 }
 
 .y_ticks, .y_grid, .x_tick, .rickshaw_graph .title {
-    display: none;
     overflow: inherit;
 }

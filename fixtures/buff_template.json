@@ -1,0 +1,8 @@
+[
+    {
+        "icon": "default.png", 
+        "key": "default", 
+        "title" : "Unknown Buff",
+        "text": "Well, aren't you unique! From {start} to {end}, there was a {strength}% {inverse}correlation between the {paths} (as aggregated by {group_by}). This isn't a very common correlation yet, so we don't have a clever description or icon for it."
+    }
+]

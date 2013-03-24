@@ -6,6 +6,8 @@ automated tests against it.
 '''
 import app
 import argparse
+import glob
+import json
 import nose
 import pymongo
 import settings
@@ -23,12 +25,14 @@ def get_args():
     parser.add_argument('--no-server', dest='run_server',
         action='store_const', const = False, default = True,
         help='do not start the server')
-    parser.add_argument('--reset-database', dest='reset_db',
+    parser.add_argument('--reset-db', dest='reset_db',
         action='store_const', const = True, default = False,
         help='wipe out the database and restore from fixtures')
     parser.add_argument('--use-reloader', dest='use_reloader',
         action='store_const', const = True, default = False,
-        help='reload server on file change (do not use with --reset-database)')
+        help='reload server on file change (do not use with --reset-db)')
+    parser.add_argument('--fixtures', action='store', dest='fixtures_path',
+        type=str, default='fixtures', help='directory to load fixtures from')
     return parser.parse_args()
 
 def main(args):
@@ -44,8 +48,23 @@ def main(args):
                 + "you want to do this? (Y/N)")
             
             if really_reset.upper() == "Y":
-                print "Wiping db and loading fixtures..."
+                print "\nWiping db and loading fixtures..."
+                
                 pymongo.MongoClient().drop_database(settings.DATABASE)
+                db = pymongo.MongoClient()[settings.DATABASE]
+                
+                # Go through every JSON file in the fixtures directory and
+                # insert the objects in the JSON files into collections named
+                # after the JSON files they came from.
+                for f in glob.iglob("%s/*.json" % args.fixtures_path):
+                    print "Loading " + f
+                    
+                    with open(f, 'r') as fixture:
+                        for rows in json.loads(fixture.read()):
+                            db[f.split('/')[-1].split('.')[0]].insert(rows)
+                
+                print "Fixtures successfully loaded!\n"
+                
             else:
                 print "Ignoring --reset-database this time, then."
            

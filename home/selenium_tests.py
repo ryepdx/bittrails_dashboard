@@ -10,7 +10,8 @@ class LoginTests(SeleniumTest):
         super(LoginTests, self).__init__(*args, **kwargs)
         self.home_page = pages.HomePage(self.browser)
         self.login_page = pages.LoginPage(self.browser)
-        self.twitter_page = auth_pages.TwitterLogin(self.browser)
+        self.twitter_page = auth_pages.TwitterPage(self.browser, self.wait,
+            'bt_testuser', 'b1ttr41ls!!1!')
         
     def pre_auth(self):
         self.browser.get(self.app_url)
@@ -29,7 +30,7 @@ class LoginTests(SeleniumTest):
         assert self.browser.current_url.startswith(
             'https://api.twitter.com/oauth/')
         
-        self.twitter_page.fill_username().fill_password().click_allow()
+        self.twitter_page.fill_out_auth_form().submit()
         self.wait.until(lambda b: b.title.startswith('Bit Trails'),
             self.browser.title)
         

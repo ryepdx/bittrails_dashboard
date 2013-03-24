@@ -26,6 +26,11 @@ class HomePage(Page):
             '//ul[@id="connectedServices"]/li[contains(text(), "%s")]' % (
             datastream.title()))
             
+    def find_on_list_of_available_datastreams(self, datastream):
+        return self.browser.find_element_by_xpath(
+            '//ul[@id="availableServices"]/li/a[contains(text(), "%s")]' % (
+            datastream.title()))
+            
     def get_custom_datastream_link(self):
         return self.browser.find_element_by_xpath(
             '//a[@href="%s"]' % CustomDatastreamPage.CUSTOM_DATASTREAM_URL)

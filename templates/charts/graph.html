@@ -16,7 +16,8 @@
         element: document.querySelector('{{id}}'),
         height: 280,
         renderer: '{{ renderer }}',
-        series: {{ series|tojson|safe }}
+        series: {{ series|tojson|safe }},
+        interpolation: 'linear'
     });
     var x_axis = new Rickshaw.Graph.Axis.Time(
         { graph: graph});//, timeUnit: unit });

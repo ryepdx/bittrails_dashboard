@@ -10,7 +10,7 @@ import charts.utils
 import buffs.utils
 import collections
 from flask import render_template, Blueprint, url_for, redirect, request
-from flask.ext.login import current_user
+from flask.ext.login import current_user, login_required
 from auth import API, BLUEPRINT
 from buffs.models import BuffTemplate, CorrelationBuff
 from buffs.helper_classes import CorrelationBuffChart
@@ -19,6 +19,7 @@ from settings import SERVER_TIMEZONE
 app = Blueprint('buffs', __name__, template_folder='/templates')
 
 @app.route('/')
+@login_required
 def index():
     user_tz = current_user.get('timezone', pytz.utc)
     active_buffs = {}
@@ -99,8 +100,8 @@ def index():
     a_year_ago = (today - datetime.timedelta(days = 365))
 
     if last_buff:
-        start_date = max(a_year_ago, (datetime.datetime(*(last_buff['end']),
-            tzinfo = pytz.utc) + datetime.timedelta(days = 1)))
+        start_date = max(a_year_ago,
+            last_buff['end'] + datetime.timedelta(days = 1))
     else:
         start_date = a_year_ago
     
@@ -193,6 +194,7 @@ def index():
             ) if min_start else None)
 
 @app.route('/<buff_id>')
+@login_required
 def buff(buff_id):
     state_dict = {'accepted': CorrelationBuff.ACCEPTED,
                   'declined': CorrelationBuff.DECLINED }

@@ -20,10 +20,10 @@ class BuffTemplate(Model):
             inverse = "inverse " if correlation['correlation'] < 0 else "",
             group_by = ', '.join(correlation['group_by']),
             start = datetime(*correlation['start'][0:10]).strftime('%Y-%m-%d'),
-            end = (datetime(*correlation['end'][0:10])
+            end = (correlation['end']
                 if correlation['end'] else datetime.now(pytz.utc)
-            ).strftime('%Y-%m-%d'),
-            paths = ' and your '.join([chart['name'] for chart in charts])
+                ).strftime('%Y-%m-%d'),
+            paths = ' and the '.join([chart['name'] for chart in charts])
         )
 
 class CorrelationBuff(Model):

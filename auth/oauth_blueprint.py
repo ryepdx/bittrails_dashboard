@@ -111,7 +111,7 @@ class BitTrailsOAuth(RauthOAuth1):
             return super(BitTrailsOAuth, self).request(method, uri, **kwargs)
     
     def get_datastreams(self, user):
-        response = [ (stream, link['href']
+        response = [ (stream, link
             ) for stream, link in self.get('root.json', user = user
             ).content['_links'].items(
             ) if stream != 'self' and stream != 'custom' ]
@@ -122,28 +122,17 @@ class BitTrailsOAuth(RauthOAuth1):
         return response
     
     def get_custom_datastreams(self, user):
-        return [ (stream, link['href']
+        return [ (stream, link
             ) for stream, link in self.get('custom.json', user = user
             ).content['_links'].items() if stream != 'self' ]    
-    
-    def get_intervals(self):
-        return ['day', 'week', 'month', 'year']
         
     def get_dimensions(self):
         response = self.get('dimensions.json', user = None).content
-
-    def get_chart_types(self):
-        return ['line', 'bar', 'scatterplot', 'area']
         
-    def get_url_map(self):
-        return [
-            ('twitter', ('tweets', ('total.json',))),
-            ('lastfm', ('scrobbles', ('total.json',), ('energy', ('total.json',))))]
-
-    def get_chart_data(self, user, path, group_by, start = None, end = None):
+    def get_chart_data(self, user, path, group_by, start = None, end = None,
+    continuous = True):
         params = [
-            ('groupBy', json.dumps(group_by)),
-            ('timeformat', 'timestamps')
+            ('groupBy', json.dumps(group_by))
         ]
         
         if start:
@@ -151,6 +140,9 @@ class BitTrailsOAuth(RauthOAuth1):
             
         if end:
             params.append(('maxDate', end))
+            
+        if continuous:
+            params.append(('continuous', 'true'))
         
         return self.get(add_params_to_uri(
             '%s.json' % path, params), user = user).content

@@ -9,13 +9,21 @@ import pyvirtualdisplay
 import selenium.webdriver.support.ui
 
 import home.selenium_tests
+import charts.selenium_tests
+import buffs.selenium_tests
+import auth.selenium_tests
 
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium_test import SeleniumTest
 
 test_levels = ["pre_auth", "login", "auth", "post_auth"]
-test_modules = [home.selenium_tests]
+test_modules = [
+    home.selenium_tests,
+    charts.selenium_tests,
+    buffs.selenium_tests,
+    auth.selenium_tests
+]
 
 ENDC = '\033[0m'
 PASS = '\033[92mPASS'+ENDC
@@ -41,6 +49,7 @@ def get_args():
         help='run the tests without showing the browser')
     parser.add_argument('--timeout', '-t', action='store', dest='timeout',
         type=int, default=10, help='seconds to wait for browser before failing')
+
     return parser.parse_args()
 
 args = get_args()
@@ -61,7 +70,8 @@ if args.webdriver_url == '':
 else:
     browser = webdriver.Remote(command_executor=args.webdriver_url,
         desired_capabilities=getattr(DesiredCapabilities, args.browser.upper()))
-        
+
+browser.implicitly_wait(args.timeout)        
 wait = selenium.webdriver.support.ui.WebDriverWait(browser, args.timeout)
 
 # Create list of tests

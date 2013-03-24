@@ -23,7 +23,7 @@ def json_for_buff(user, buff, colors):
     for path in buff['paths']:
         chart_data = API.get_chart_data(user, path, buff['group_by'],
             start = "%s-%s-%s" % tuple(buff['start']),
-            end = ("%s-%s-%s" % tuple(buff['end'])
+            end = (buff['end'].strftime('%Y-%m-%d')
                 ) if buff['end'] else datetime.datetime.now(pytz.utc
                 ).strftime('%Y-%m-%d'))
         

@@ -34,7 +34,7 @@ $(document).ready(function () {
 {% if not_connected|length == 0 and no_custom_streams %}
     <em>You've connected all the available datastreams!</em>
 {% else %}
-<ul>
+<ul id="availableServices">
 {% for service in not_connected %}
     <li>
         <a href="/auth/{{ service }}/begin">
