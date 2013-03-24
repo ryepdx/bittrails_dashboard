@@ -102,8 +102,12 @@ $(document).ready(function () {
 
 <div class="four columns">
     <h1>Active</h1>
-    {% if not active_buffs %}
+    {% if not active_buff_charts %}
     <p>You don't have any active buffs.</p>
+    {% else %}
+        {% for chart in active_buff_charts %}
+        <img src="/static/images/buffs/{{ chart.icon }}" />
+        {% endfor %}
     {% endif %}
 </div>
 {% endblock%}

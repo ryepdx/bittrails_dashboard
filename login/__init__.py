@@ -1,7 +1,7 @@
 from blinker import Namespace
 import auth
 from flask import url_for, session
-from flask.ext.login import login_user, current_user
+from flask.ext.login import login_user, current_user, AnonymousUser
 from login.models import User
 from bson.objectid import ObjectId
 from auth.signals import oauth_completed
@@ -50,6 +50,11 @@ def register_user(request, access_token):
     return None
 
 def load_user(user_id):
-    return User(**(User.get_collection().find_one(ObjectId(user_id))))
+    user = User.get_collection().find_one(ObjectId(user_id))
+    
+    if user:
+        return User(**user)
+    else:
+        return None
 
 auth.signals.oauth_completed.connect(update_user)

@@ -110,7 +110,7 @@ class BitTrailsOAuth(RauthOAuth1):
         else:
             return super(BitTrailsOAuth, self).request(method, uri, **kwargs)
     
-    def get_datastreams(self, user = None):
+    def get_datastreams(self, user):
         response = [ (stream, link['href']
             ) for stream, link in self.get('root.json', user = user
             ).content['_links'].items(

@@ -12,16 +12,17 @@ def index():
     if current_user.is_authenticated():
         return redirect(url_for('.home'))
     else:
-        return render_template('%s/index.html' % app.name,
-            twitter_url = '/auth/twitter/begin')
+        return redirect(url_for('.login'))
 
 @app.route('/login')
 def login():
-    return index()
+    return render_template('%s/index.html' % app.name,
+            twitter_url = '/auth/twitter/begin')
 
 @app.route('/logout')
 def logout():
-    logout_user()
+    if current_user:
+        logout_user()
     session.clear()
     return redirect(url_for('.index'))
 

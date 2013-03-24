@@ -22,6 +22,7 @@ app = Blueprint('buffs', __name__, template_folder='/templates')
 def index():
     user_tz = current_user.get('timezone', pytz.utc)
     active_buffs = {}
+    active_buff_charts = []
     accepted_buffs = {}
     outstanding_buffs = []
     all_paths = ['lastfm/scrobbles/echonest/totals',
@@ -55,12 +56,16 @@ def index():
         start_timestamp = int(time.mktime(
             datetime.datetime(*buff.start, tzinfo = pytz.utc).timetuple()))
         
+        # If the buff does not have a non-null end date, then we will just use
+        # today. Null end dates indicate active buffs.
         if buff['end']:
             end_timestamp = int(time.mktime(
                 datetime.datetime(*buff.end, tzinfo = pytz.utc).timetuple()))
         else:
-            end_timestamp = time.gmtime()
+            end_timestamp = int(time.mktime(
+                datetime.datetime.now(pytz.utc).timetuple()))
             active_buffs[buff.key] = buff
+            active_buff_charts.append(chart)
             
         if max_end == None or end_timestamp > max_end:
             max_end = end_timestamp
@@ -107,8 +112,8 @@ def index():
     # date of last_buff.
     correlation_start_date = today
     if active_buffs:
-        for buff in active_buffs:
-            buff_start = datetime.datetime(*buff['start'])
+        for buff in active_buffs.values():
+            buff_start = datetime.datetime(*buff['start'], tzinfo = pytz.utc)
             
             if buff_start < correlation_start_date:
                 correlation_start_date = buff_start
@@ -139,39 +144,45 @@ def index():
                 # If the correlation end date is today, then we consider the buff
                 # active. We want to change its end date to None.
                 if today == end:
-                    correlation['end'] = None
+                    correlation_end = None
+                else:
+                    correlation_end = end
                 
+                del correlation['end']
                 buff = CorrelationBuff.find_or_create(
                     user_id = current_user['_id'], **correlation)
-                    
+                                    
                 # If this has an start date greater than start_date, then we know
                 # we need to save it. If not, and if it doesn't correspond to an
                 # active buff, then we can ignore it. The user will have already
                 # been prompted with it, by definition.
+                # Also, don't append outstanding buffs with IDs, since they'll
+                # already be a part of the outstanding_buffs list due to our
+                # earlier Pymongo query.
                 if (start > start_date 
                 and buff['state'] == CorrelationBuff.OUTSTANDING
                 and '_id' not in buff):
-                    buff_id = CorrelationBuff.save(buff)
-                    correlation['_id'] = buff_id
-                    correlation['state'] = buff['state']
                     outstanding_buffs.append(buff)
+                    
+                # Update the buff end date, or save the new buff if it hasn't
+                # been saved before.
+                if (buff['end'] != correlation_end or '_id' not in buff):
+                    buff['end'] = correlation_end
+                    CorrelationBuff.save(buff)
                     
                 # Does this "new correlation" correspond to a previously accepted
                 # active buff? Does the new correlation provide an end date for that
                 # active buff? Then update the buff's end date.
                 if buff.key in active_buffs and end != today:
-                    active_buffs[buff.key]['end'] = buff['end']
-        
-    # Save all active buffs.
-    for buff in active_buffs.values():
-        CorrelationBuff.save(buff)
+                    active_buffs[buff.key]['end'] = correlation_end
+                    CorrelationBuff.save(buff)
     
     # Format the correlations as buffs.
     outstanding_buffs = [CorrelationBuffChart.create(current_user, buff
         ) for buff in outstanding_buffs]
         
     return render_template('%s/index.html' % app.name,
-        active_buffs = active_buffs,
+        active_buff_charts = active_buff_charts,
         outstanding_buffs = outstanding_buffs, 
         accepted_buffs = json.dumps(accepted_buffs.values()
             ) if accepted_buffs else None,

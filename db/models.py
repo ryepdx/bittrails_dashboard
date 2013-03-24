@@ -1,10 +1,10 @@
+import app as dashboard
 from db import get_connection
-from settings import DATABASE
 
 class Model(dict):
     @classmethod
     def get_collection(cls):
-        conn = get_connection(DATABASE)
+        conn = get_connection(dashboard.app.config['DATABASE'])
         return conn[cls.table]
         
     @classmethod

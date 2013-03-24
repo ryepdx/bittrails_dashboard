@@ -21,7 +21,7 @@ $(document).ready(function () {
 <div class="six columns">
 <h1>Your Streams</h1>
 {% if connected %}
-<ul>
+<ul id="connectedServices">
     {% for service in connected %}
     <li>{{ service|title|replace('_', ' ') }}</li>
     {% endfor %}

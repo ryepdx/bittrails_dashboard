@@ -1,42 +1,41 @@
-from flask import Flask, session, redirect
-from flask.ext.login import LoginManager
-from settings import PORT, DEBUG, APP_SECRET_KEY
-from errors import register_error_pages
+import flask
+import settings
 
-import auth
-import login
-import home.views
-import charts.views
-import buffs.views
-import twitter_demo.views
-import terminal.views
+app = flask.Flask('bittrails')
 
-def main():
-    app = Flask('bittrails')
-    app.secret_key = APP_SECRET_KEY
-    app.config['TRAP_BAD_REQUEST_ERRORS'] = DEBUG
+def setup_app(settings):
+    app.secret_key = settings.APP_SECRET_KEY
+    app.config['TRAP_BAD_REQUEST_ERRORS'] = settings.DEBUG
+    app.config['DATABASE'] = settings.DATABASE
+
+# The function below gets called from __main__
+def main(settings = settings, use_reloader = False):
+    setup_app(settings)
     
-    register_error_pages(app)
+    import auth
+    import errors
+    import login
+    import home.views
+    import charts.views
+    import buffs.views
+    import twitter_demo.views
+    import flask.ext.login
+    
+    errors.register_error_pages(app)
     auth.register_auth_blueprint(app)
     app.register_blueprint(home.views.app)
     app.register_blueprint(charts.views.app, url_prefix='/charts')
     app.register_blueprint(buffs.views.app, url_prefix='/buffs')
     
     # Set up login and registration.
-    login_manager = LoginManager()
+    login_manager = flask.ext.login.LoginManager()
     login_manager.login_view = "home.login"
     login_manager.setup_app(app)
     app.login_manager.user_loader(login.load_user)
-    
-    if DEBUG:    
-        @app.route('/url_map')
-        def url_map():
-            return str(app.url_map)
-            
-        app.register_blueprint(terminal.views.app, url_prefix='/terminal')
         
     # Run the app!
-    app.run(host = '0.0.0.0', port = PORT, debug = DEBUG)
+    app.run(host = '0.0.0.0', port = settings.PORT, debug = settings.DEBUG,
+        use_reloader = use_reloader)
 
 if __name__ == '__main__':
     main()
