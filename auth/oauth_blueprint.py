@@ -104,7 +104,7 @@ class OAuthBlueprint(Blueprint):
 
 class BitTrailsOAuth(RauthOAuth1):
     def request(self, method, uri, user, **kwargs):
-        if user:
+        if user and user.is_authenticated():
             return super(BitTrailsOAuth, self).request(method, uri,
                 oauth_token = user.access_key, **kwargs)
         else:

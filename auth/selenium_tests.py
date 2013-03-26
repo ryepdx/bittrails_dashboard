@@ -12,11 +12,10 @@ class AuthTests(SeleniumTest):
         
         # Twitter is absent here because home.selenium_tests takes care of it.
         self.pages = {
-            'foursquare': pages.FoursquarePage(self.browser, self.wait,
+            'foursquare': pages.FoursquarePage(self.browser,
                 'testuser@bittrails.com', password='b1ttr41ls'),
-            'lastfm': pages.LastfmPage(self.browser, self.wait, 'bt_testuser'),
-            'google': pages.GooglePage(self.browser, self.wait,
-                'bittrails.testuser')
+            'lastfm': pages.LastfmPage(self.browser, 'bt_testuser'),
+            'google': pages.GooglePage(self.browser, 'bittrails.testuser')
         }
             
     def post_auth(self):

@@ -7,7 +7,7 @@ automated tests against it.
 import app
 import argparse
 import glob
-import json
+import bson.json_util
 import nose
 import pymongo
 import settings
@@ -60,7 +60,7 @@ def main(args):
                     print "Loading " + f
                     
                     with open(f, 'r') as fixture:
-                        for rows in json.loads(fixture.read()):
+                        for rows in bson.json_util.loads(fixture.read()):
                             db[f.split('/')[-1].split('.')[0]].insert(rows)
                 
                 print "Fixtures successfully loaded!\n"

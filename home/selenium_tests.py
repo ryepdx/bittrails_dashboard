@@ -10,7 +10,7 @@ class LoginTests(SeleniumTest):
         super(LoginTests, self).__init__(*args, **kwargs)
         self.home_page = pages.HomePage(self.browser)
         self.login_page = pages.LoginPage(self.browser)
-        self.twitter_page = auth_pages.TwitterPage(self.browser, self.wait,
+        self.twitter_page = auth_pages.TwitterPage(self.browser,
             'bt_testuser', 'b1ttr41ls!!1!')
         
     def pre_auth(self):

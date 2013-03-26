@@ -1,9 +1,8 @@
 import page
 
 class ThirdPartyAuthPage(page.Page):
-    def __init__(self, browser, wait, username, password = 'b1ttr41ls!!1!'):
+    def __init__(self, browser, username, password = 'b1ttr41ls!!1!'):
         super(ThirdPartyAuthPage, self).__init__(browser)
-        self.wait = wait
         self.username = username
         self.password = password
 
