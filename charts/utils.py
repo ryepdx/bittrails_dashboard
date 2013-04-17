@@ -23,13 +23,14 @@ def json_for_buff(user, buff, colors):
     for path in buff['paths']:
         chart_data = API.get_chart_data(user, path, buff['group_by'],
             start = "%s-%s-%s" % tuple(buff['start']),
-            end = (buff['end'].strftime('%Y-%m-%d')
+            end = buff['end'].strftime('%Y-%m-%d'
                 ) if buff['end'] else datetime.datetime.now(pytz.utc
-                ).strftime('%Y-%m-%d'))
+                ).strftime('%Y-%m-%d')
+        )
         
         chart_series.append({
             'name': (chart_data['_links']['self']['title']
-                ) if 'title' in chart_data['_links']['self'
+                ) if '_links' in chart_data and 'title' in chart_data['_links']['self'
                 ] else path.replace('/', ' ').title(),
             'color': colors.next(),
             'data': format_chart_data(chart_data['data'])

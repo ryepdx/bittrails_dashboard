@@ -111,10 +111,13 @@ class BitTrailsOAuth(RauthOAuth1):
             return super(BitTrailsOAuth, self).request(method, uri, **kwargs)
     
     def get_datastreams(self, user):
-        response = [ (stream, link
-            ) for stream, link in self.get('root.json', user = user
-            ).content['_links'].items(
-            ) if stream != 'self' and stream != 'custom' ]
+        datastreams = self.get('root.json', user = user).content
+        response = []
+        
+        if '_links' in datastreams: 
+            response = [ (stream, link
+                ) for stream, link in datastreams['_links'].items(
+                ) if stream != 'self' and stream != 'custom' ]
             
         if 'custom' in response:
             response += self.get_custom_datastreams(user)
@@ -122,9 +125,14 @@ class BitTrailsOAuth(RauthOAuth1):
         return response
     
     def get_custom_datastreams(self, user):
-        return [ (stream, link
-            ) for stream, link in self.get('custom.json', user = user
-            ).content['_links'].items() if stream != 'self' ]    
+        datastreams = self.get('custom.json', user = user).content
+        
+        if '_links' in datastreams:
+            return [ (stream, link
+                ) for stream, link in datastreams['_links'].items(
+                ) if stream != 'self' ]
+        else:
+            return []
         
     def get_dimensions(self):
         response = self.get('dimensions.json', user = None).content

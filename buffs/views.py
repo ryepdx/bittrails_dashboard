@@ -61,7 +61,7 @@ def index():
         # today. Null end dates indicate active buffs.
         if buff['end']:
             end_timestamp = int(time.mktime(
-                datetime.datetime(*buff.end, tzinfo = pytz.utc).timetuple()))
+                pytz.UTC.localize(buff.end).timetuple()))
         else:
             end_timestamp = int(time.mktime(
                 datetime.datetime.now(pytz.utc).timetuple()))
@@ -100,6 +100,7 @@ def index():
     a_year_ago = (today - datetime.timedelta(days = 365))
 
     if last_buff:
+        last_buff['end'] = pytz.UTC.localize(last_buff['end'])
         start_date = max(a_year_ago,
             last_buff['end'] + datetime.timedelta(days = 1))
     else:
@@ -152,6 +153,9 @@ def index():
                 del correlation['end']
                 buff = CorrelationBuff.find_or_create(
                     user_id = current_user['_id'], **correlation)
+                    
+                if 'end' in buff and buff['end']:
+                    buff['end'] = pytz.UTC.localize(buff['end'])
                                     
                 # If this has an start date greater than start_date, then we know
                 # we need to save it. If not, and if it doesn't correspond to an
