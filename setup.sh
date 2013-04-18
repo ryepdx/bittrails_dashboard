@@ -2,7 +2,7 @@
 cd ..
 sudo apt-get -y install python2.7 git python-setuptools gcc python-dev
 git clone https://github.com/ryepdx/bittrails_dashboard_site-packages.git
-mv bittrails_dashboard_site-packages /usr/lib/python2.7/site-packages
+sudo mv bittrails_dashboard_site-packages /usr/lib/python2.7/site-packages
 cd bittrails_dashboard
 sudo easy_install pip
 sudo pip install -r requirements.txt
@@ -25,5 +25,4 @@ sudo sh -c 'echo "exec uwsgi --master --processes 4 --die-on-term --uid uwsgi --
 sudo apt-get install mongodb-10gen
 cd bittrails_dashboard
 echo "y" | python . --no-server --reset-db
-python -m async_tasks.datastreams.fill_zeroes
 cd ..
