@@ -6,6 +6,7 @@ mv bittrails_dashboard_site-packages /usr/lib/python2.7/site-packages
 cd bittrails_dashboard
 sudo easy_install pip
 sudo pip install -r requirements.txt
+sudo pip install iso8601 nose pytz pymongo
 cd ..
 sudo sh -c 'echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" > /etc/apt/sources.list.d/10gen.list'
 wget http://nginx.org/keys/nginx_signing.key
@@ -22,3 +23,7 @@ sudo sh -c 'echo "stop on runlevel [06]\n\n" >> /etc/init/uwsgi.conf'
 sudo sh -c 'echo "respawn\n\n" >> /etc/init/uwsgi.conf'
 sudo sh -c 'echo "exec uwsgi --master --processes 4 --die-on-term --uid uwsgi --gid nginx --socket /tmp/uwsgi.sock --chmod-socket 660 --no-site --vhost --logto /var/log/uwsgi.log" >> /etc/init/uwsgi.conf'
 sudo apt-get install mongodb-10gen
+cd bittrails_dashboard
+echo "y" | python . --no-server --reset-db
+python -m async_tasks.datastreams.fill_zeroes
+cd ..
