@@ -1,19 +1,17 @@
 #!/bin/bash
 cd ..
-sudo apt-get -y install python2.7 git python-setuptools gcc python-dev
-git clone https://github.com/ryepdx/bittrails_dashboard_site-packages.git
-sudo mv bittrails_dashboard_site-packages /usr/lib/python2.7/site-packages
-cd bittrails_dashboard
-sudo easy_install pip
-sudo pip install -r requirements.txt
-sudo pip install iso8601 nose pytz pymongo
-cd ..
 sudo sh -c 'echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" > /etc/apt/sources.list.d/10gen.list'
 wget http://nginx.org/keys/nginx_signing.key
 sudo apt-key add nginx_signing.key
 rm nginx_signing.key
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
 sudo apt-get -y update
+sudo apt-get -y install python2.7 git python-setuptools gcc python-dev
+git clone https://github.com/ryepdx/bittrails_dashboard_site-packages.git
+sudo mv bittrails_dashboard_site-packages/* /usr/local/lib/python2.7/dist-packages
+cd bittrails_dashboard
+sudo easy_install pip
+cd ..
 sudo apt-get -y install nginx
 sudo pip install uwsgi
 sudo useradd -c 'uwsgi user,,,' -g nginx -d /nonexistent -s /bin/false uwsgi
@@ -25,5 +23,5 @@ sudo sh -c 'echo "exec uwsgi --master --processes 4 --die-on-term --uid uwsgi --
 sudo apt-get install mongodb-10gen
 cd bittrails_dashboard
 echo "DEBUG=True" > settings_local.py
+echo "DATABASE_PORT=27017" >> settings_local.py
 echo "y" | python . --no-server --reset-db
-cd ..

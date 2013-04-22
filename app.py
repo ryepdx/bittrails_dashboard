@@ -18,7 +18,6 @@ def main(settings = settings, use_reloader = False):
     import home.views
     import charts.views
     import buffs.views
-    import twitter_demo.views
     import terminal.views
     import flask.ext.login
     

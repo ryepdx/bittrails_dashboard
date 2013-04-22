@@ -50,14 +50,17 @@ def format_chart_data(data):
         if "isoyear" in datum and "isoweek" in datum:
             datum_date = iso_to_gregorian(
                 datum['isoyear'], datum['isoweek'], datum.get('isoweekday', 1))
-        else:
+        elif 'year' in datum and 'month' in datum and 'day' in datum:
             datum_date = datetime.datetime(
                 datum.get('year'), datum.get('month', 1), datum.get('day', 1))
+        else:
+            datum_date = None
                 
-        formatted_data.append({
-            'x': time.mktime(datum_date.timetuple()),
-            'y': datum['value']
-        })
+        if datum_date:
+            formatted_data.append({
+                'x': time.mktime(datum_date.timetuple()),
+                'y': datum['value']
+            })
         
     return sorted(formatted_data, key = lambda k: k['x'])
 
