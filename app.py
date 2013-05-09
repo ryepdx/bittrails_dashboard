@@ -3,14 +3,10 @@ import settings
 
 app = flask.Flask('bittrails')
 
-def setup_app(settings):
+def setup_app(settings, app = app):
     app.secret_key = settings.APP_SECRET_KEY
     app.config['TRAP_BAD_REQUEST_ERRORS'] = settings.DEBUG
     app.config['DATABASE'] = settings.DATABASE
-
-# The function below gets called from __main__
-def main(settings = settings, use_reloader = False):
-    setup_app(settings)
     
     import auth
     import errors
@@ -32,6 +28,13 @@ def main(settings = settings, use_reloader = False):
     login_manager.login_view = "home.login"
     login_manager.setup_app(app)
     app.login_manager.user_loader(login.load_user)
+
+    return app
+    
+
+# The function below gets called from __main__
+def main(settings = settings, use_reloader = False):
+    setup_app(settings)
         
     if settings.DEBUG:
         app.register_blueprint(terminal.views.app, url_prefix='/terminal')    
