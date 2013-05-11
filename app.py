@@ -14,7 +14,6 @@ def setup_app(settings, app = app):
     import home.views
     import charts.views
     import buffs.views
-    import terminal.views
     import flask.ext.login
     
     errors.register_error_pages(app)
@@ -37,6 +36,7 @@ def main(settings = settings, use_reloader = False):
     setup_app(settings)
         
     if settings.DEBUG:
+    	import terminal.views
         app.register_blueprint(terminal.views.app, url_prefix='/terminal')    
     
     # Run the app!
